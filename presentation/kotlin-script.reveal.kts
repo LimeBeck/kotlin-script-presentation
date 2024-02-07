@@ -1,6 +1,5 @@
 import dev.limebeck.revealkt.core.RevealKt
 import qrcode.color.Colors
-import java.io.File
 
 title = "Hello from my awesome presentation"
 
@@ -82,8 +81,7 @@ slides {
         +qrCode("https://github.com/Kotlin/KEEP/blob/master/proposals/scripting-support.md#implementation-status") {
             stretch = true
             transformBuilder {
-                val logo =
-                    File("/home/lime/work/opensource/presentations/kotlin-script/kotlin-script/presentation/assets/logo2.png").readBytes()
+                val logo = loadAsset("logo2.png")
                 it.withSize(20)
                     .withColor(Colors.css("#B125EA"))
                     .withLogo(logo, 150, 150, clearLogoArea = true)

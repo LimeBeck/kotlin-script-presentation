@@ -1,7 +1,7 @@
 import dev.limebeck.revealkt.core.RevealKt
 import qrcode.color.Colors
 
-title = "Hello from my awesome presentation"
+title = "Kotlin Script: для кого, зачем и как"
 
 fun kotlinCode(block: () -> String) = code(lang = "kotlin", block = block)
 
@@ -13,92 +13,156 @@ configuration {
 }
 
 slides {
-    val scriptPositioningTitle = title { "Позиционирование Kotlin Scripting" }
-    slide {
-        +scriptPositioningTitle
-    }
-    slide {
-        +scriptPositioningTitle
-        +smallTitle { "От Jetbrains:" }
-        +unorderedListOf(
-            listOf(
-                "Build scripts (Gradle/Kobalt)",
-                "Test scripts (Spek)",
-                "Command-line utilities",
-                "Routing scripts (ktor)",
-                "Type-safe configuration files (TeamCity)",
-                "In-process scripting and REPL for IDE",
-                "Consoles like IPython/Jupyter Notebook",
-                "Game scripting engines",
-                "..."
-            )
-        )
+    verticalSlide {
+        slide {
+            +title { "Тут вступление и т.д." }
+        }
     }
 
-    slide {
-        +scriptPositioningTitle
-        +smallTitle { "Обобщенно:" }
-        +unorderedListOf(
-            listOf(
-                "Read-Eval-Print Loop aka REPL",
-                "замена BASH-скриптов в автоматизации задач",
-                "встраивание скриптового движка в приложение",
-                "скрипты, которые компилируются вместе с исходниками",
+    verticalSlide {
+        val scriptPositioningTitle = title { "Позиционирование Kotlin Scripting" }
+        slide {
+            +scriptPositioningTitle
+        }
+        slide {
+            +scriptPositioningTitle
+            +smallTitle { "От Jetbrains:" }
+            +unorderedListOf(
+                listOf(
+                    "Build scripts (Gradle/Kobalt)",
+                    "Test scripts (Spek)", //Not implemented now
+                    "Command-line utilities",
+                    "Routing scripts (ktor)", //Not implemented now
+                    "Type-safe configuration files (TeamCity)",
+                    "In-process scripting and REPL for IDE",
+                    "Consoles like IPython/Jupyter Notebook",
+                    "Game scripting engines",
+                    "..."
+                )
             )
-        )
+            +note {
+                """
+                    Стоит заметить, что часть этих задумок еще не реализована
+                    В частности - скрипты, которые компилируются с исходниками.
+                    
+                    Я так и не смог найти ни одного адекватного примера скриптов, которые
+                    бы компилировались вместе с иходниками
+                """.trimIndent()
+            }
+        }
+        slide {
+            +scriptPositioningTitle
+            +smallTitle { "Обобщенно:" }
+            +unorderedListOf(
+                listOf(
+                    "Read-Eval-Print Loop aka REPL",
+                    "замена BASH-скриптов в автоматизации задач",
+                    "встраивание скриптового движка в приложение",
+                    "скрипты, которые компилируются вместе с исходниками",
+                )
+            )
+            +note {
+                """                    
+                    К REPL можно отнести и Jupyter Kotlin
+                """.trimIndent()
+            }
+        }
     }
 
     slide {
         +smallTitle { "REPL" }
+        +regular { "Tools > Kotlin > Kotlin REPL (Experimental)" }
         +img("REPL.png")
-    }
-
-    val jupyterTitle = smallTitle { "Kotlin для Jupiter Notebook" }
-    slide {
-        +jupyterTitle
-    }
-    slide {
-        +jupyterTitle
-        +img("./jupyter.png") {
-            stretch = true
-        }
-    }
-
-    val autoTitle = smallTitle { "замена BASH-скриптов в автоматизации задач" }
-    val mainKtsTitle = smallTitle { ".main.kts" }
-    slide {
-        +autoTitle
-    }
-    slide {
-        +autoTitle
-        +kotlinCode {
-            //language=kotlin
+        +note {
             """
-                #!/usr/bin/env kotlin
-                
-                import java.io.File
-                
-                val file = File("path/to/my.file")
-                val text = file.readText()
-                val newText = text.process()
-                file.writeText(newText)
+                Зачем нужен REPL: максимально быстро получить обратную связь
+                по коду
             """.trimIndent()
         }
     }
-    slide {
-        +autoTitle
-        +mainKtsTitle
-    }
-    slide {
-        +mainKtsTitle
-        +kotlinCode {
-            loadAsset("test.main.kts").decodeToString()
+
+    verticalSlide {
+        val jupyterTitle = smallTitle { "Kotlin для Jupiter Notebook" }
+        slide {
+            +jupyterTitle
+            +img("./jupyter.png") {
+                stretch = true
+            }
+            +note {
+                """
+                    Думаю, не нужно объяснять, что такое ноутбуки для DS
+                """.trimIndent()
+            }
         }
     }
-    slide {
-        +mainKtsTitle
-        +code(lang = "bash") {
+
+    verticalSlide {
+        val autoTitle = smallTitle { "замена BASH-скриптов в автоматизации задач" }
+        slide {
+            +autoTitle
+        }
+
+        val why = smallTitle { "Зачем?" }
+        val thatsWhyNote = note {
             """
+                Рассказать, какая боль - писать скрипты на баше.
+                Особенно, если в скриптах нужно например сходить за данными в БД
+                или по сети и после как-то преобразовать их.
+                Ну и typesafe, когда скрипт не запустится, пока не напишешь нормально
+            """.trimIndent()
+        }
+        slide {
+            +why
+            +thatsWhyNote
+        }
+        slide {
+            +why
+            +unorderedListOf(listOf(
+                "Сложные скрипты на Bash - боль",
+                "Управлять зависимостями Python - тоже боль",
+                "Хочется писать на Kotlin",
+                "Типобезопасность на уровне компиляции"
+            ))
+            +thatsWhyNote
+        }
+
+        slide {
+            +autoTitle
+            +smallTitle { "Скрипты .kts" }
+            +kotlinCode {
+                //language=kotlin
+                """
+                    #!/usr/bin/env kotlin
+                    
+                    import java.io.File
+                    
+                    fun complexProcess(text: String): String = TODO()
+                    
+                    val file = File("path/to/my.file")
+                    val text = file.readText()
+                    val newText = complexProcess(text)
+                    file.writeText(newText)
+                """.trimIndent()
+            }
+            +note {
+                """
+                    Но встроенных в Kotlin библиотек недостаточно (по сравнению с тем же Python).
+                    Тогда на помощь приходят скрипты .main.kts, куда можно добавить любые JVM библиотеки
+                """.trimIndent()
+            }
+        }
+
+        val mainKtsTitle = smallTitle { "Скрипты .main.kts" }
+        slide {
+            +mainKtsTitle
+            +kotlinCode {
+                loadAsset("test.main.kts").decodeToString()
+            }
+        }
+        slide {
+            +mainKtsTitle
+            +code(lang = "bash") {
+                """
                 > ./test.main.kts 
                 Value for option --input should be always provided in command line.
                 Usage: example options_list
@@ -107,68 +171,73 @@ slides {
                     --debug, -d [false] -> Turn on debug mode 
                     --help, -h -> Usage info 
             """.trimIndent()
+            }
         }
     }
 
-    val scriptEngineTitle = smallTitle { "встраивание скриптового движка в приложение" }
-    slide {
-        +scriptEngineTitle
-    }
-    val why = smallTitle { "Зачем?" }
-    slide {
-        +why
-    }
-    slide {
-        +why
-        +unorderedListOf(listOf(
-            "конфигурация через \"Typesafe DSL\"",
-            "микроядерная архитектура",
-            "кастомизация действий пользователем"
-        ))
-    }
-
-
-    val componentsTitle = title { "Основные компоненты скриптинга" }
-    slide {
-        +componentsTitle
-    }
-    slide {//Добавить схему
-        +componentsTitle
-        +unorderedListOf(
-            listOf(
-                "Script Definition",
-                "Script Loader",
-            )
-        )
+    verticalSlide {
+        val scriptEngineTitle = smallTitle { "Встраивание скриптового движка в приложение" }
+        slide {
+            +scriptEngineTitle
+        }
+        val why = smallTitle { "Зачем?" }
+        slide {
+            +why
+        }
+        slide {
+            +why
+            +unorderedListOf(listOf(
+                "конфигурация через \"Typesafe DSL\"",
+                "микроядерная архитектура",
+                "кастомизация действий пользователем"
+            ))
+        }
     }
 
-    val scriptDefTitle = smallTitle { "Script Definition" }
-    slide {
-        +scriptDefTitle
-    }
-    slide {
-        +scriptDefTitle
-        +smallTitle { "\"Look and feel\"" }
-    }
-    slide {
-        +scriptDefTitle
-        +unorderedListOf(
-            listOf(
-                "Конфигурация компиляции",
-                "Конфигурация выполнения",
-            )
-        )
-    }
-
-    slide {
-        +smallTitle { "Базовый пример" }
-        +kotlinCode {
-            """
-                @KotlinScript(
-                    fileExtension = "shiny.kts",
+    verticalSlide {
+        val componentsTitle = title { "Основные компоненты скриптинга" }
+        slide {
+            +componentsTitle
+        }
+        slide {//Добавить схему
+            +componentsTitle
+            +unorderedListOf(
+                listOf(
+                    "Script Definition",
+                    "Script Loader",
                 )
-                abstract class MyShinyKtScript //Класс обязательно должен быть открытым или абстрактным
-            """.trimIndent()
+            )
+        }
+    }
+
+    verticalSlide {
+        val scriptDefTitle = smallTitle { "Script Definition" }
+        slide {
+            +scriptDefTitle
+        }
+        slide {
+            +scriptDefTitle
+            +smallTitle { "\"Look and feel\"" }
+        }
+        slide {
+            +scriptDefTitle
+            +unorderedListOf(
+                listOf(
+                    "Конфигурация компиляции",
+                    "Конфигурация выполнения",
+                )
+            )
+        }
+        slide {
+            +smallTitle { "Базовый пример" }
+            +kotlinCode {
+                """
+                    @KotlinScript(
+                        fileExtension = "shiny.kts",
+                    )
+                    abstract class MyShinyKtScript //Класс обязательно должен быть открытым или абстрактным
+                """.trimIndent()
+            }
         }
     }
 
@@ -189,6 +258,9 @@ slides {
                     "Параметры компилятора Kotlin"
                 )
             )
+            note {
+                "Нужно ли рассказывать про то, что такое implicit receivers?"
+            }
         }
 
         slide {
@@ -227,9 +299,6 @@ slides {
                 """.trimIndent()
             }
         }
-    }
-
-    verticalSlide {
         slide {
             +compilationTitle
             +smallTitle { "Внешние зависимости" } //Добавить пример
@@ -314,17 +383,21 @@ slides {
         }
         slide {
             +loaderTitle
+            +smallTitle { "\"Evaluate and run\"" }
+        }
+        slide {
+            +loaderTitle
             +kotlinCode {
                 """
                     fun BasicJvmScriptingHost.evalFile(
                         scriptFile: File
                     ): ResultWithDiagnostics<EvaluationResult> {
                         val compilationConfiguration = 
-                            createJvmCompilationConfigurationFromTemplate<RevealKtScript> { 
+                            createJvmCompilationConfigurationFromTemplate<MyShinyScript> { 
                                 //Тут мы можем дополнить и переопределить конфигурацию при необходимости
                             }
                         val evaluationConfiguration = 
-                            createJvmEvaluationConfigurationFromTemplate<RevealKtScript> {
+                            createJvmEvaluationConfigurationFromTemplate<MyShinyScript> {
                                 //Тут мы можем дополнить и переопределить конфигурацию при необходимости
                             }
                         return eval(
@@ -341,10 +414,43 @@ slides {
         }
     }
 
-    val jsrTitle = title { "Kotlin Script VS JSR223" }
-    slide {
-        +jsrTitle
+    verticalSlide {
+        val ideTitle = smallTitle { "Подсветка в IDE" }
+        slide {
+            +ideTitle
+        }
+        slide {
+            +ideTitle
+            +regular("Пустой файл в META-INF/kotlin/script/templates с полным именем класса в названии")
+        }
+//        slide {
+//            +ideTitle
+//            +regular("META-INF/kotlin/script/templates/\ndev.limebeck.scripts.MyShinyScript.classname")
+//        }
+        slide { //TODO: Заменить скрин на MyShinyScript
+            +ideTitle
+            +img("IDE_scriptDefPath.png") {
+                stretch = true
+            }
+        }
+        slide { //TODO Заменить скрин на MyShinyScript
+            +ideTitle
+            +img("IDE.png") {
+                stretch = true
+            }
+        }
+        slide {
+            +ideTitle
+            +smallTitle { "Но только в Intellij IDEA" }
+        }
     }
+
+    verticalSlide {
+        val jsrTitle = title { "Kotlin Script VS JSR223" }
+        slide {
+            +jsrTitle
+        }
+
 //    markdownSlide {
 //        """
 //            |     | Kotlin Script | JSR223 |
@@ -354,39 +460,38 @@ slides {
 //            | Язык | Kotlin | Зависит от имплементации |
 //        """.trimIndent()
 //    }
-    slide {
-
-        val columns = listOf(
-            listOf(
-                regularText(""),
-                regularText("Поддержка IDE"),
-                regularText("Простой запуск"),
-                regularText("Язык"),
-            ),
-            listOf(
-                smallTitle("Kotlin Script"),
-                regularText("Полная (IDEA)"),
-                regularText("Через команду kotlin"),
-                regularText("Kotlin"),
-            ),
-            listOf(
-                smallTitle("JSR223"),
-                regularText("Зависит от языка"),
-                regularText("Нет"),
-                regularText("Зависит от имплементации"),
+        slide {
+            val columns = listOf(
+                listOf(
+                    regularText(""),
+                    regularText("Поддержка IDE"),
+                    regularText("Простой запуск"),
+                    regularText("Язык"),
+                ),
+                listOf(
+                    smallTitle("Kotlin Script"),
+                    regularText("Полная (IDEA)"),
+                    regularText("Через команду kotlin"),
+                    regularText("Kotlin"),
+                ),
+                listOf(
+                    smallTitle("JSR223"),
+                    regularText("Зависит от языка"),
+                    regularText("Нет"),
+                    regularText("Зависит от имплементации"),
+                )
             )
-        )
-        for (rowNum in columns.first().indices) {
-            +row {
-                for (column in columns) {
-                    column {
-                        +column[rowNum]
+            for (rowNum in columns.first().indices) {
+                +row {
+                    for (column in columns) {
+                        column {
+                            +column[rowNum]
+                        }
                     }
                 }
             }
         }
     }
-
 
 //    slide {
 //        //Перенести в конец в полезные штуки
@@ -402,7 +507,6 @@ slides {
 //        }
 //    }
     slide {
-        //Перенести в конец в полезные штуки
         +title { "Ссылка на презентацию" }
         +qrCode("https://github.com/LimeBeck/kotlin-script-presentation") {
             stretch = true

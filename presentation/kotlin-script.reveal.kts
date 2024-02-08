@@ -9,35 +9,7 @@ configuration {
     controls = false
     progress = true
     theme = RevealKt.Configuration.Theme.Predefined.BLACK
-    //language=CSS
-    additionalCssStyle = """
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
-
-		.reveal h1,
-		.reveal h2,
-		.reveal h3,
-		.reveal h4,
-		.reveal h5,
-		.reveal h6 {
-			font-family: 'Roboto', sans-serif;
-		}
-
-		.reveal .slide {
-			font-family: 'Roboto', sans-serif;
-		}
-
-		.container {
-			display: flex;
-		}
-
-		.col {
-			flex: 1;
-		}
-
-        pre > code {
-            font-size: large;
-        }
-    """.trimIndent()
+    additionalCssStyle = loadAsset("additional.css").decodeToString()
 }
 
 slides {
@@ -68,32 +40,99 @@ slides {
         +smallTitle { "Обобщенно:" }
         +unorderedListOf(
             listOf(
-                "REPL",
-                "встраивание скриптового движка в приложение",
+                "Read-Eval-Print Loop aka REPL",
                 "замена BASH-скриптов в автоматизации задач",
+                "встраивание скриптового движка в приложение",
                 "скрипты, которые компилируются вместе с исходниками",
             )
         )
     }
 
     slide {
-        +title { "KEEP: Scripting Support" }
-        +qrCode("https://github.com/Kotlin/KEEP/blob/master/proposals/scripting-support.md#implementation-status") {
+        +smallTitle { "REPL" }
+        +img("REPL.png")
+    }
+
+    val jupyterTitle = smallTitle { "Kotlin для Jupiter Notebook" }
+    slide {
+        +jupyterTitle
+    }
+    slide {
+        +jupyterTitle
+        +img("./jupyter.png") {
             stretch = true
-            transformBuilder {
-                val logo = loadAsset("logo2.png")
-                it.withSize(20)
-                    .withColor(Colors.css("#B125EA"))
-                    .withLogo(logo, 150, 150, clearLogoArea = true)
-            }
         }
     }
+
+    val autoTitle = smallTitle { "замена BASH-скриптов в автоматизации задач" }
+    val mainKtsTitle = smallTitle { ".main.kts" }
+    slide {
+        +autoTitle
+    }
+    slide {
+        +autoTitle
+        +kotlinCode {
+            //language=kotlin
+            """
+                #!/usr/bin/env kotlin
+                
+                import java.io.File
+                
+                val file = File("path/to/my.file")
+                val text = file.readText()
+                val newText = text.process()
+                file.writeText(newText)
+            """.trimIndent()
+        }
+    }
+    slide {
+        +autoTitle
+        +mainKtsTitle
+    }
+    slide {
+        +mainKtsTitle
+        +kotlinCode {
+            loadAsset("test.main.kts").decodeToString()
+        }
+    }
+    slide {
+        +mainKtsTitle
+        +code(lang = "bash") {
+            """
+                > ./test.main.kts 
+                Value for option --input should be always provided in command line.
+                Usage: example options_list
+                Options: 
+                    --input, -i -> Input file (always required) { String }
+                    --debug, -d [false] -> Turn on debug mode 
+                    --help, -h -> Usage info 
+            """.trimIndent()
+        }
+    }
+
+    val scriptEngineTitle = smallTitle { "встраивание скриптового движка в приложение" }
+    slide {
+        +scriptEngineTitle
+    }
+    val why = smallTitle { "Зачем?" }
+    slide {
+        +why
+    }
+    slide {
+        +why
+        +unorderedListOf(listOf(
+            "конфигурация через \"Typesafe DSL\"",
+            "микроядерная архитектура",
+            "кастомизация действий пользователем"
+        ))
+    }
+
 
     val componentsTitle = title { "Основные компоненты скриптинга" }
     slide {
         +componentsTitle
     }
-    slide {
+    slide {//Добавить схему
         +componentsTitle
         +unorderedListOf(
             listOf(
@@ -109,17 +148,20 @@ slides {
     }
     slide {
         +scriptDefTitle
+        +smallTitle { "\"Look and feel\"" }
+    }
+    slide {
+        +scriptDefTitle
         +unorderedListOf(
             listOf(
-                "Compilation configuration",
-                "Evaluation configuration",
+                "Конфигурация компиляции",
+                "Конфигурация выполнения",
             )
         )
     }
 
     slide {
         +smallTitle { "Базовый пример" }
-        +smallTitle { "Script Definition" }
         +kotlinCode {
             """
                 @KotlinScript(
@@ -132,20 +174,21 @@ slides {
 
     val compilationTitle = smallTitle { "Конфигурация компиляции" }
     val exampleTitle = smallTitle { "Пример" }
-
     verticalSlide {
         slide {
             +compilationTitle
         }
         slide {
             +compilationTitle
-            +unorderedListOf(listOf(
-                "Зависимости",
-                "Импорты по умолчанию",
-                "Определение неявных (implicit) ресиверов",
-                "Конфигурация IDE",
-                "Параметры компилятора Kotlin"
-            ))
+            +unorderedListOf(
+                listOf(
+                    "Зависимости",
+                    "Импорты по умолчанию",
+                    "Определение неявных (implicit) ресиверов",
+                    "Конфигурация IDE",
+                    "Параметры компилятора Kotlin"
+                )
+            )
         }
 
         slide {
@@ -189,7 +232,7 @@ slides {
     verticalSlide {
         slide {
             +compilationTitle
-            +smallTitle { "Внешние зависимости" }
+            +smallTitle { "Внешние зависимости" } //Добавить пример
             +kotlinCode {
                 """
                     object MyShinyScriptCompilationConfiguration : ScriptCompilationConfiguration({
@@ -205,35 +248,6 @@ slides {
                 """.trimIndent()
             }
         }
-
-        slide {
-            +compilationTitle
-            +smallTitle { "Внешние зависимости" }
-            +kotlinCode {
-                """
-                    fun configureMavenDepsOnAnnotations(
-                        context: ScriptConfigurationRefinementContext
-                    ): ResultWithDiagnostics<ScriptCompilationConfiguration> {
-                        val annotations = context.collectedData
-                            ?.get(ScriptCollectedData.collectedAnnotations)
-                            ?.takeIf { it.isNotEmpty() }
-                            ?: return context.compilationConfiguration.asSuccess()
-                        return runBlocking {
-                            resolver.resolveFromScriptSourceAnnotations(annotations)
-                        }.onSuccess {
-                            context.compilationConfiguration.with {
-                                dependencies.append(JvmDependency(it))
-                            }.asSuccess()
-                        }
-                    }
-    
-                    private val resolver = CompoundDependenciesResolver(
-                        FileSystemDependenciesResolver(),
-                        MavenDependenciesResolver()
-                    )
-                """.trimIndent()
-            }
-        }
     }
 
     val evaluationTitle = smallTitle { "Конфигурация исполнения" }
@@ -243,14 +257,16 @@ slides {
         }
         slide {
             +evaluationTitle
-            +unorderedListOf(listOf(
-                "Параметры запуска JVM",
-                "Подкидывание созданных экземпляров implicit ресиверов",
-                "Аргументы коструктора для базового класса скрипта (MyShinyKtScript)",
-                "Возможность разделения инстансов скрипта",
-                "Просмотр истории запусков (для REPL)",
-                "Возможность переопределения любых частей скрипта"
-            ))
+            +unorderedListOf(
+                listOf(
+                    "Параметры запуска JVM",
+                    "Подкидывание созданных экземпляров implicit ресиверов",
+                    "Аргументы коструктора для базового класса скрипта (MyShinyKtScript)",
+                    "Возможность разделения инстансов скрипта",
+                    "Просмотр истории запусков (для REPL)",
+                    "Возможность переопределения любых частей скрипта"
+                )
+            )
         }
         slide {
             +evaluationTitle
@@ -296,9 +312,106 @@ slides {
         slide {
             +loaderTitle
         }
+        slide {
+            +loaderTitle
+            +kotlinCode {
+                """
+                    fun BasicJvmScriptingHost.evalFile(
+                        scriptFile: File
+                    ): ResultWithDiagnostics<EvaluationResult> {
+                        val compilationConfiguration = 
+                            createJvmCompilationConfigurationFromTemplate<RevealKtScript> { 
+                                //Тут мы можем дополнить и переопределить конфигурацию при необходимости
+                            }
+                        val evaluationConfiguration = 
+                            createJvmEvaluationConfigurationFromTemplate<RevealKtScript> {
+                                //Тут мы можем дополнить и переопределить конфигурацию при необходимости
+                            }
+                        return eval(
+                            script = scriptFile.toScriptSource(),
+                            compilationConfiguration = compilationConfiguration,
+                            evaluationConfiguration = evaluationConfiguration
+                        )
+                    }
+
+                    val scriptingHost = BasicJvmScriptingHost()
+                    val result = scriptingHost.evalFile(scriptFile)
+                """.trimIndent()
+            }
+        }
     }
 
+    val jsrTitle = title { "Kotlin Script VS JSR223" }
     slide {
-        +title { "Kotlin Script VS JSR223" }
+        +jsrTitle
+    }
+//    markdownSlide {
+//        """
+//            |     | Kotlin Script | JSR223 |
+//            | --- | --- | --- |
+//            | Поддержка IDE | Полная (IDEA) | Зависит от языка |
+//            | Простой запуск | Через команду kotlin | Нет |
+//            | Язык | Kotlin | Зависит от имплементации |
+//        """.trimIndent()
+//    }
+    slide {
+
+        val columns = listOf(
+            listOf(
+                regularText(""),
+                regularText("Поддержка IDE"),
+                regularText("Простой запуск"),
+                regularText("Язык"),
+            ),
+            listOf(
+                smallTitle("Kotlin Script"),
+                regularText("Полная (IDEA)"),
+                regularText("Через команду kotlin"),
+                regularText("Kotlin"),
+            ),
+            listOf(
+                smallTitle("JSR223"),
+                regularText("Зависит от языка"),
+                regularText("Нет"),
+                regularText("Зависит от имплементации"),
+            )
+        )
+        for (rowNum in columns.first().indices) {
+            +row {
+                for (column in columns) {
+                    column {
+                        +column[rowNum]
+                    }
+                }
+            }
+        }
+    }
+
+
+//    slide {
+//        //Перенести в конец в полезные штуки
+//        +title { "KEEP: Scripting Support" } //KEEP расшифровать
+//        +qrCode("https://github.com/Kotlin/KEEP/blob/master/proposals/scripting-support.md#implementation-status") {
+//            stretch = true
+//            transformBuilder {
+//                val logo = loadAsset("logo2.png")
+//                it.withSize(20)
+//                    .withColor(Colors.css("#B125EA"))
+//                    .withLogo(logo, 150, 150, clearLogoArea = true)
+//            }
+//        }
+//    }
+    slide {
+        //Перенести в конец в полезные штуки
+        +title { "Ссылка на презентацию" }
+        +qrCode("https://github.com/LimeBeck/kotlin-script-presentation") {
+            stretch = true
+            transformBuilder {
+                val logo = loadAsset("logo2.png")
+                it.withSize(20)
+                    .withColor(Colors.css("#B125EA"))
+                    .withLogo(logo, 150, 150, clearLogoArea = true)
+            }
+        }
     }
 }

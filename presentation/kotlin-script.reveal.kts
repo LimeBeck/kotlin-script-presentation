@@ -69,15 +69,29 @@ slides {
         }
     }
 
-    slide {
-        +smallTitle { "REPL" }
-        +regular { "Tools > Kotlin > Kotlin REPL (Experimental)" }
-        +img("REPL.png")
-        +note {
-            """
+    verticalSlide {
+        val replTitle = smallTitle { "REPL" }
+        slide {
+            +replTitle
+            +regular { "Tools > Kotlin > Kotlin REPL (Experimental)" }
+            +img("REPL.png")
+            +note {
+                """
                 Зачем нужен REPL: максимально быстро получить обратную связь
                 по коду
             """.trimIndent()
+            }
+        }
+        slide {
+            +replTitle
+            +regular { "SHELL" }
+            +img("repl_shell.png")
+            +note {
+                """
+                Зачем нужен REPL: максимально быстро получить обратную связь
+                по коду
+            """.trimIndent()
+            }
         }
     }
 
@@ -117,12 +131,12 @@ slides {
         }
         slide {
             +why
-            +unorderedListOf(listOf(
+            +unorderedListOf(
                 "Сложные скрипты на Bash - боль",
                 "Управлять зависимостями Python - тоже боль",
                 "Хочется писать на Kotlin",
                 "Типобезопасность на уровне компиляции"
-            ))
+            )
             +thatsWhyNote
         }
 
@@ -153,6 +167,14 @@ slides {
         }
 
         val mainKtsTitle = smallTitle { "Скрипты .main.kts" }
+        slide {
+            +mainKtsTitle
+            +unorderedListOf(
+                "Подключение сторонних библиотек",
+                "Конфигурация комплятора в самом скрипте",
+                "Удобная работа \"из коробки\"",
+            )
+        }
         slide {
             +mainKtsTitle
             +kotlinCode {
@@ -186,11 +208,11 @@ slides {
         }
         slide {
             +why
-            +unorderedListOf(listOf(
+            +unorderedListOf(
                 "конфигурация через \"Typesafe DSL\"",
                 "микроядерная архитектура",
                 "кастомизация действий пользователем"
-            ))
+            )
         }
     }
 
@@ -250,16 +272,50 @@ slides {
         slide {
             +compilationTitle
             +unorderedListOf(
-                listOf(
-                    "Зависимости",
-                    "Импорты по умолчанию",
-                    "Определение неявных (implicit) ресиверов",
-                    "Конфигурация IDE",
-                    "Параметры компилятора Kotlin"
-                )
+                "Зависимости",
+                "Импорты по умолчанию",
+                "Конфигурация IDE",
+                "Параметры компилятора Kotlin",
+                "Определение неявных (implicit) ресиверов",
             )
-            note {
-                "Нужно ли рассказывать про то, что такое implicit receivers?"
+        }
+
+        val implRecTitle = smallTitle { "Receivers" }
+        slide {
+            +implRecTitle
+            +note {
+                """
+                    Небольшое отступление, рассказ, что такое receivers,
+                    чем implicit отличается от explicit
+                    Receiver - понятие из классического ООП с определением как обмен сообщениями
+                    Receiver - получатель
+                    Sender - отправитель
+                    Т.е., в нашем случае - Sender вызывает метод у Receiver
+                """.trimIndent()
+            }
+        }
+        slide {
+            +implRecTitle
+            +kotlinCode {
+                """
+                    class MyClass {
+                        fun doSomething() = TODO()
+                        
+                        fun explicitReceiver() {
+                            this.doSomething()
+                        }
+                        
+                        fun implicitReceiver() {
+                            doSomething()
+                        }
+                    }
+                """.trimIndent()
+            }
+            +note {
+                """
+                    Explicit - когда мы явно указываем получателя (т.е. в этом случае - this)
+                    Implicit - неявно, просто вызываем метод, опуская this
+                """.trimIndent()
             }
         }
 
@@ -423,10 +479,10 @@ slides {
             +ideTitle
             +regular("Пустой файл в META-INF/kotlin/script/templates с полным именем класса в названии")
         }
-//        slide {
-//            +ideTitle
-//            +regular("META-INF/kotlin/script/templates/\ndev.limebeck.scripts.MyShinyScript.classname")
-//        }
+        slide {
+            +ideTitle
+            +regular("META-INF/kotlin/script/templates/\ndev.limebeck.scripts.MyShinyScript.classname")
+        }
         slide { //TODO: Заменить скрин на MyShinyScript
             +ideTitle
             +img("IDE_scriptDefPath.png") {
@@ -441,55 +497,31 @@ slides {
         }
         slide {
             +ideTitle
-            +smallTitle { "Но только в Intellij IDEA" }
+            +smallTitle { "Работает только в Intellij IDEA" }
         }
     }
 
     verticalSlide {
-        val jsrTitle = title { "Kotlin Script VS JSR223" }
+        val jsrVsKotlinTitle = title { "Kotlin Script VS JSR223" }
+        slide {
+            +jsrVsKotlinTitle
+        }
+
+        val jsrTitle = smallTitle { "JSR223" }
         slide {
             +jsrTitle
         }
-
-//    markdownSlide {
-//        """
-//            |     | Kotlin Script | JSR223 |
-//            | --- | --- | --- |
-//            | Поддержка IDE | Полная (IDEA) | Зависит от языка |
-//            | Простой запуск | Через команду kotlin | Нет |
-//            | Язык | Kotlin | Зависит от имплементации |
-//        """.trimIndent()
-//    }
         slide {
-            val columns = listOf(
-                listOf(
-                    regularText(""),
-                    regularText("Поддержка IDE"),
-                    regularText("Простой запуск"),
-                    regularText("Язык"),
-                ),
-                listOf(
-                    smallTitle("Kotlin Script"),
-                    regularText("Полная (IDEA)"),
-                    regularText("Через команду kotlin"),
-                    regularText("Kotlin"),
-                ),
-                listOf(
-                    smallTitle("JSR223"),
-                    regularText("Зависит от языка"),
-                    regularText("Нет"),
-                    regularText("Зависит от имплементации"),
-                )
+            +jsrTitle
+            +smallTitle { "Абстракция в JVM для скриптовых движков" }
+        }
+        slide {
+            +jsrTitle
+            +unorderedListOf(
+                "Общий интерфейс для исполнения",
+                "Даёт общий интерфейс",
+                "Даёт общий интерфейс",
             )
-            for (rowNum in columns.first().indices) {
-                +row {
-                    for (column in columns) {
-                        column {
-                            +column[rowNum]
-                        }
-                    }
-                }
-            }
         }
     }
 

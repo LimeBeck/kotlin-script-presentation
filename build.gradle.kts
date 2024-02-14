@@ -1,4 +1,4 @@
-val revealKtVersion = "0.2.2"
+val revealKtVersion = "0.2.1"
 
 group = "dev.limebeck"
 version = "1.0.0"
@@ -8,7 +8,7 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
+//    mavenLocal()
     mavenCentral()
 }
 

@@ -6,7 +6,7 @@ title = "Kotlin Script: для кого, зачем и как"
 fun kotlinCode(block: () -> String) = code(lang = "kotlin", block = block)
 
 configuration {
-    controls = false
+    controls = true
     progress = true
     theme = RevealKt.Configuration.Theme.Predefined.BLACK
     additionalCssStyle = loadAsset("additional.css").decodeToString()
@@ -28,17 +28,15 @@ slides {
             +scriptPositioningTitle
             +smallTitle { "От Jetbrains:" }
             +unorderedListOf(
-                listOf(
-                    "Build scripts (Gradle/Kobalt)",
-                    "Test scripts (Spek)", //Not implemented now
-                    "Command-line utilities",
-                    "Routing scripts (ktor)", //Not implemented now
-                    "Type-safe configuration files (TeamCity)",
-                    "In-process scripting and REPL for IDE",
-                    "Consoles like IPython/Jupyter Notebook",
-                    "Game scripting engines",
-                    "..."
-                )
+                "Build scripts (Gradle/Kobalt)",
+                "Test scripts (Spek)", //Not implemented now
+                "Command-line utilities",
+                "Routing scripts (ktor)", //Not implemented now
+                "Type-safe configuration files (TeamCity)",
+                "In-process scripting and REPL for IDE",
+                "Consoles like IPython/Jupyter Notebook",
+                "Game scripting engines",
+                "..."
             )
             +note {
                 """
@@ -54,12 +52,10 @@ slides {
             +scriptPositioningTitle
             +smallTitle { "Обобщенно:" }
             +unorderedListOf(
-                listOf(
                     "Read-Eval-Print Loop aka REPL",
                     "замена BASH-скриптов в автоматизации задач",
                     "встраивание скриптового движка в приложение",
                     "скрипты, которые компилируются вместе с исходниками",
-                )
             )
             +note {
                 """                    
@@ -383,14 +379,12 @@ slides {
         slide {
             +evaluationTitle
             +unorderedListOf(
-                listOf(
-                    "Параметры запуска JVM",
-                    "Подкидывание созданных экземпляров implicit ресиверов",
-                    "Аргументы коструктора для базового класса скрипта (MyShinyKtScript)",
-                    "Возможность разделения инстансов скрипта",
-                    "Просмотр истории запусков (для REPL)",
-                    "Возможность переопределения любых частей скрипта"
-                )
+                "Параметры запуска JVM",
+                "Подкидывание созданных экземпляров implicit ресиверов",
+                "Аргументы коструктора для базового класса скрипта (MyShinyKtScript)",
+                "Возможность разделения инстансов скрипта",
+                "Просмотр истории запусков (для REPL)",
+                "Возможность переопределения любых частей скрипта"
             )
         }
         slide {

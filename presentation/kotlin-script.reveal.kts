@@ -1,3 +1,5 @@
+#!/usr/bin/env -S revealkt runS
+
 import dev.limebeck.revealkt.core.RevealKt
 import qrcode.color.Colors
 

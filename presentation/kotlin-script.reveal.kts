@@ -38,12 +38,11 @@ slides {
 
     verticalSlide {
         slide {
-            +smallTitle { "Позиционирование Kotlin Scripting" }
+            +title { "Позиционирование Kotlin Scripting" }
             +smallTitle { "От Jetbrains" }
         }
         slide {
             +title { "KEEP: Kotlin Scripting support" }
-            +smallTitle { "Applications" }
             +unorderedListOf(
                 "Build scripts (Gradle/Kobalt)",
                 "Test scripts (Spek)",
@@ -71,7 +70,7 @@ slides {
             }
         }
         slide {
-            +smallTitle { "Обобщим:" }
+            +smallTitle { "Обобщим" }
             +unorderedListOf(
                 "Read-Eval-Print Loop (REPL)",
                 "замена BASH-скриптов",
@@ -90,9 +89,22 @@ slides {
 
     verticalSlide {
         val replTitle = smallTitle { "Read-Eval-Print Loop (REPL)" }
+        val why = smallTitle { "Зачем он нужен?" }
         slide {
             +replTitle
-            +regular { "Tools > Kotlin > Kotlin REPL (Experimental)" }
+            +why
+        }
+        slide {
+            +why
+            +unorderedListOf(
+                "Обучение основам",
+                "Прототипирование",
+                "Быстрая обратная связь",
+            )
+        }
+        slide {
+            +replTitle
+            +regular { "IDEA > Tools > Kotlin > Kotlin REPL (Experimental)" }
             +img("REPL.png") //Укрупнить
             +note {
                 """
@@ -116,6 +128,9 @@ slides {
 
     verticalSlide {
         val jupyterTitle = smallTitle { "Kotlin для Jupiter Notebook" }
+        slide {
+            +jupyterTitle
+        }
         slide {
             +jupyterTitle
             +img("./jupyter.png") {
@@ -150,6 +165,15 @@ slides {
         }
         slide {
             +why
+            +code(lang = "bash") {
+                """
+                    # Нумеруем строки в файле
+                    sed = a.txt | sed 'N; s/^/ /; s/ *\(.\{4,\}\)\n/\1 /'
+                """.trimIndent()
+            }
+        }
+        slide {
+            +why
             +unorderedListOf(
                 "Сложные скрипты на Bash - боль",
                 "Управлять зависимостями Python - тоже боль",
@@ -158,7 +182,7 @@ slides {
                 "Типобезопасность на уровне компиляции"
             )
             +thatsWhyNote
-            //TODO: Добавить пример на awk + ci/cd
+            //TODO: Добавить пример на awk/sed + ci/cd
         }
 
         slide {
@@ -206,14 +230,14 @@ slides {
             +mainKtsTitle
             +code(lang = "bash") {
                 """
-                > ./test.main.kts 
-                Value for option --input should be always provided in command line.
-                Usage: example options_list
-                Options: 
-                    --input, -i -> Input file (always required) { String }
-                    --debug, -d [false] -> Turn on debug mode 
-                    --help, -h -> Usage info 
-            """.trimIndent()
+                    > ./test.main.kts 
+                    Value for option --input should be always provided in command line.
+                    Usage: example options_list
+                    Options: 
+                        --input, -i -> Input file (always required) { String }
+                        --debug, -d [false] -> Turn on debug mode 
+                        --help, -h -> Usage info 
+                """.trimIndent()
             }
         }
     }
@@ -541,7 +565,7 @@ slides {
                 "Общий интерфейс для исполнения",
                 "Даёт общий интерфейс",
                 "Даёт общий интерфейс",
-                )
+            )
         }
     }
 

@@ -9,9 +9,11 @@
 * [Roadmap развития Kotlin](https://kotlinlang.org/docs/roadmap.html)
 * [Официальные примеры встраивания Kotlin Script](https://github.com/Kotlin/kotlin-script-examples)
 * [The Java Scripting API](https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/prog_guide/api.html)
+* [Ядро Kotlin для Jupyter Notebook](https://github.com/Kotlin/kotlin-jupyter)
 
 ## Примеры проектов с использованием Kotlin Script
 
+* https://github.com/LimeBeck/reveal-kt
 * https://github.com/way-zer/ScriptAgent4MindustryExt/tree/7.5
 * https://github.com/dkandalov/live-plugin
 * https://github.com/typesafegithub/github-workflows-kt

@@ -1,4 +1,4 @@
-#!/usr/bin/env -S revealkt runS
+#!/usr/bin/env -S revealkt run
 
 import dev.limebeck.revealkt.core.RevealKt
 import qrcode.color.Colors
@@ -8,8 +8,6 @@ title = "Kotlin Script: для кого, зачем и как"
 fun kotlinCode(block: () -> String) = code(lang = "kotlin", block = block)
 
 configuration {
-    controls = true
-    progress = true
     theme = RevealKt.Configuration.Theme.Predefined.BLACK
     additionalCssStyle = loadAsset("additional.css").decodeToString()
 }
@@ -17,28 +15,46 @@ configuration {
 slides {
     verticalSlide {
         slide {
+            +title { "Kotlin Script" }
+            +title { "кому, зачем и как" }
+        }
+        val warning = title { "WARNING" }.apply {
+            addStyle("color", "red")
+        }
+        slide {
+            +warning
+        }
+        slide {
+            +warning
+            +title { "Kotlin Script еще βeta" }
+        }
+    }
+
+    verticalSlide {
+        slide {
             +title { "Тут вступление и т.д." }
         }
     }
 
     verticalSlide {
-        val scriptPositioningTitle = title { "Позиционирование Kotlin Scripting" }
         slide {
-            +scriptPositioningTitle
+            +smallTitle { "Позиционирование Kotlin Scripting" }
+            +smallTitle { "От Jetbrains" }
         }
         slide {
-            +scriptPositioningTitle
-            +smallTitle { "От Jetbrains:" }
+            +title { "KEEP: Kotlin Scripting support" }
+            +smallTitle { "Applications" }
             +unorderedListOf(
                 "Build scripts (Gradle/Kobalt)",
-                "Test scripts (Spek)", //Not implemented now
+                "Test scripts (Spek)",
                 "Command-line utilities",
-                "Routing scripts (ktor)", //Not implemented now
+                "Routing scripts (ktor)",
                 "Type-safe configuration files (TeamCity)",
                 "In-process scripting and REPL for IDE",
                 "Consoles like IPython/Jupyter Notebook",
                 "Game scripting engines",
-                "..."
+                "...",
+                fragmented = false
             )
             +note {
                 """
@@ -47,20 +63,25 @@ slides {
                     
                     Я так и не смог найти ни одного адекватного примера скриптов, которые
                     бы компилировались вместе с иходниками
+                    
+                    Объяснить, что это прямая цитата из KEEP Jetbrains
+                    
+                    Не менялся 3 года
                 """.trimIndent()
             }
         }
         slide {
-            +scriptPositioningTitle
-            +smallTitle { "Обобщенно:" }
+            +smallTitle { "Обобщим:" }
             +unorderedListOf(
-                    "Read-Eval-Print Loop aka REPL",
-                    "замена BASH-скриптов в автоматизации задач",
-                    "встраивание скриптового движка в приложение",
-                    "скрипты, которые компилируются вместе с исходниками",
+                "Read-Eval-Print Loop (REPL)",
+                "замена BASH-скриптов",
+                "встраивание скриптового движка",
+                "компиляция скриптов с исходниками", //Нужно перефразировать и объяснить
+                fragmented = false
             )
             +note {
-                """                    
+                """
+                    Называть причину по каждому пункту
                     К REPL можно отнести и Jupyter Kotlin
                 """.trimIndent()
             }
@@ -68,11 +89,11 @@ slides {
     }
 
     verticalSlide {
-        val replTitle = smallTitle { "REPL" }
+        val replTitle = smallTitle { "Read-Eval-Print Loop (REPL)" }
         slide {
             +replTitle
             +regular { "Tools > Kotlin > Kotlin REPL (Experimental)" }
-            +img("REPL.png")
+            +img("REPL.png") //Укрупнить
             +note {
                 """
                 Зачем нужен REPL: максимально быстро получить обратную связь
@@ -132,10 +153,12 @@ slides {
             +unorderedListOf(
                 "Сложные скрипты на Bash - боль",
                 "Управлять зависимостями Python - тоже боль",
-                "Хочется писать на Kotlin",
+                "Экосистема JVM",
+                "Удобство Kotlin",
                 "Типобезопасность на уровне компиляции"
             )
             +thatsWhyNote
+            //TODO: Добавить пример на awk + ci/cd
         }
 
         slide {
@@ -208,7 +231,7 @@ slides {
             +why
             +unorderedListOf(
                 "конфигурация через \"Typesafe DSL\"",
-                "микроядерная архитектура",
+                "микроядерная архитектура (плагины)",
                 "кастомизация действий пользователем"
             )
         }
@@ -223,7 +246,7 @@ slides {
             +componentsTitle
             +unorderedListOf(
                 listOf(
-                    "Script Definition",
+                    "Script Definition", //Associate this
                     "Script Loader",
                 )
             )
@@ -498,6 +521,7 @@ slides {
     }
 
     verticalSlide {
+        //TODO: куда поставить?
         val jsrVsKotlinTitle = title { "Kotlin Script VS JSR223" }
         slide {
             +jsrVsKotlinTitle
@@ -517,25 +541,48 @@ slides {
                 "Общий интерфейс для исполнения",
                 "Даёт общий интерфейс",
                 "Даёт общий интерфейс",
+                )
+        }
+    }
+
+    verticalSlide {
+        val securityTitle = smallTitle { "Безопасность в Kotlin Script" }
+        slide {
+            +securityTitle
+        }
+        slide {
+            +securityTitle
+            +unorderedListOf(
+                "Ограничение по модулям",
+                "Ограничение по доступным классам"
             )
         }
     }
 
-//    slide {
-//        //Перенести в конец в полезные штуки
-//        +title { "KEEP: Scripting Support" } //KEEP расшифровать
-//        +qrCode("https://github.com/Kotlin/KEEP/blob/master/proposals/scripting-support.md#implementation-status") {
-//            stretch = true
-//            transformBuilder {
-//                val logo = loadAsset("logo2.png")
-//                it.withSize(20)
-//                    .withColor(Colors.css("#B125EA"))
-//                    .withLogo(logo, 150, 150, clearLogoArea = true)
-//            }
-//        }
-//    }
+    verticalSlide {
+        val minusesTitle = smallTitle { "Минусы" }
+        slide {
+            +minusesTitle
+        }
+        slide {
+            +minusesTitle
+            +unorderedListOf(
+                "Слабая поддержка в IDE",
+                "Мало документации",
+                "Только на JVM",
+                "Долгий старт",
+                "Общая сырость, баги",
+            )
+            +note {
+                """
+                    Привести примеры - не работает подсветка в @import
+                """.trimIndent()
+            }
+        }
+    }
+
     slide {
-        +title { "Ссылка на презентацию" }
+        +title { "Ссылка на презентацию и полезные штуки" }
         +qrCode("https://github.com/LimeBeck/kotlin-script-presentation") {
             stretch = true
             transformBuilder {

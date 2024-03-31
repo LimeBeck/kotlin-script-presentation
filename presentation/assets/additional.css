@@ -24,3 +24,11 @@
 pre > code {
     font-size: 1rem;
 }
+
+.reveal pre {
+    line-height: 1em !important;
+}
+
+pre[data-id="live-plugin-code"] {
+    width: 100%;
+}

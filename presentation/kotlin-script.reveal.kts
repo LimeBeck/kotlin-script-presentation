@@ -1,11 +1,25 @@
 #!/usr/bin/env -S revealkt run
 
 import dev.limebeck.revealkt.core.RevealKt
+import dev.limebeck.revealkt.utils.ID
+import dev.limebeck.revealkt.utils.UuidGenerator
 import qrcode.color.Colors
 
 title = "Kotlin Script: для кого, зачем и как"
 
-fun kotlinCode(block: () -> String) = code(lang = "kotlin", block = block)
+fun kotlinCode(id: ID = UuidGenerator.generateId(), block: () -> String) =
+    code(id = id, lang = "kotlin", block = block)
+
+fun qr(data: String) = qrCode(data) {
+    stretch = true
+    transformBuilder {
+        val logo = loadAsset("logo2.png")
+        it.withSize(20)
+            .withColor(Colors.css("#B125EA"))
+            .withLogo(logo, 150, 150, clearLogoArea = true)
+    }
+}
+
 
 configuration {
     theme = RevealKt.Configuration.Theme.Predefined.BLACK
@@ -18,19 +32,30 @@ slides {
             +title { "Kotlin Script" }
             +title { "кому, зачем и как" }
         }
-        val warning = title { "WARNING" }.apply {
-            addStyle("color", "red")
-        }
-        slide {
-            +warning
-        }
-        slide {
-            +warning
-            +title { "Kotlin Script еще βeta" }
-        }
     }
 
     verticalSlide {
+        regularSlide {
+            +mediumTitle { "Кто я такой?" }
+            +row {
+                column {
+                    +img(src = "me.jpg") {
+                        height = 400
+                    }
+                }
+                column {
+                    +unorderedListOf(
+                        listOf(
+                            "Техлид JVM Backend в Банке Центр-инвест",
+                            "Фанат Kotlin",
+                            "Пишу на Kotlin больше 5 лет",
+                            "Написал эту презентацию на Kotlin"
+                        ),
+                        fragmented = false
+                    )
+                }
+            }
+        }
         slide {
             +title { "Тут вступление и т.д." }
         }
@@ -43,6 +68,7 @@ slides {
         }
         slide {
             +title { "KEEP: Kotlin Scripting support" }
+            +smallTitle { "Applications" }
             +unorderedListOf(
                 "Build scripts (Gradle/Kobalt)",
                 "Test scripts (Spek)",
@@ -63,19 +89,17 @@ slides {
                     Я так и не смог найти ни одного адекватного примера скриптов, которые
                     бы компилировались вместе с иходниками
                     
-                    Объяснить, что это прямая цитата из KEEP Jetbrains
-                    
-                    Не менялся 3 года
+                    Объяснить, что это прямая цитата из KEEP Jetbrains и что он не менялся 3 года
                 """.trimIndent()
             }
         }
         slide {
             +smallTitle { "Обобщим" }
             +unorderedListOf(
-                "Read-Eval-Print Loop (REPL)",
                 "замена BASH-скриптов",
+                "Read-Eval-Print Loop (REPL)",
+                "компиляция скриптов с исходниками",
                 "встраивание скриптового движка",
-                "компиляция скриптов с исходниками", //Нужно перефразировать и объяснить
                 fragmented = false
             )
             +note {
@@ -87,9 +111,125 @@ slides {
         }
     }
 
+
+    verticalSlide {
+        slide {
+            +smallTitle { "Примеры использования" }
+        }
+        slide {
+            +smallTitle { "Jetbrains Space CI/CD DSL" }
+            +kotlinCode {
+                """
+                @file:DependsOn("com.squareup.okhttp:okhttp:2.7.4")
+
+                import com.squareup.okhttp.*
+                
+                job("Get example.com") {
+                    container(image = "amazoncorretto:17-alpine") {
+                        kotlinScript {
+                            val client = OkHttpClient()
+                            val request = Request.Builder().url("http://example.com").build()
+                            val response = client.newCall(request).execute()
+                            println(response)
+                        }
+                    }
+                }
+            """.trimIndent()
+            }
+        }
+
+        slide {
+            +smallTitle { "Github Workflows Kt" }
+            +kotlinCode {
+                """
+                    #!/usr/bin/env kotlin
+                    @file:DependsOn("io.github.typesafegithub:github-workflows-kt:1.13.0")
+
+                    import ...
+
+                    workflow(name = "Build", on = listOf(PullRequest()), sourceFile = __FILE__.toPath()) {
+                        job(id = "build", runsOn = UbuntuLatest) {
+                            uses(action = CheckoutV4())
+                            uses(action = SetupJavaV3())
+                            uses(
+                                name = "Build",
+                                action = GradleBuildActionV2(
+                                    arguments = "build",
+                                )
+                            )
+                        }
+                    }.writeToFile()
+                """.trimIndent()
+            }
+        }
+
+        slide {
+            +smallTitle { "Презентации с Reveal-Kt" }
+            +kotlinCode {
+                """
+                    title = "My awesome presentation"
+
+                    configuration {
+                        controls = false
+                        progress = false
+                    }
+                    
+                    slides {
+                        slide {
+                            autoanimate = true
+                            +title { "Hello from my awesome presentation" }
+                        }
+                    }
+                """.trimIndent()
+            }
+        }
+
+        slide {
+            +smallTitle { "Live-Plugin" }
+            +kotlinCode(id = ID("live-plugin-code")) {
+                """
+                    import com.intellij.openapi.actionSystem.AnActionEvent
+                    import liveplugin.*
+
+                    registerAction(id = "Insert New Line Above", keyStroke = "ctrl alt shift ENTER") { event ->
+                        val project = event.project ?: return@registerAction
+                        val editor = event.editor ?: return@registerAction
+                        executeCommand(editor.document, project) { document ->
+                            val caretModel = editor.caretModel
+                            val lineStartOffset = document.getLineStartOffset(caretModel.logicalPosition.line)
+                            document.insertString(lineStartOffset, "\n")
+                            caretModel.moveToOffset(caretModel.offset + 1)
+                        }
+                    }
+                    show("Loaded 'Insert New Line Above' action<br/>Use 'ctrl+alt+shift+Enter' to run it")
+                """.trimIndent()
+            }
+        }
+        slide {
+            +smallTitle { "Простое CLI приложение" }
+            +kotlinCode {
+                loadAsset("test.main.kts").decodeToString()
+            }
+        }
+    }
+
+    //REPL
     verticalSlide {
         val replTitle = smallTitle { "Read-Eval-Print Loop (REPL)" }
         val why = smallTitle { "Зачем он нужен?" }
+        slide {
+            +replTitle
+        }
+        slide {
+            +replTitle
+            +unorderedListOf(
+                "Читает (парсит)",
+                "Исполняет",
+                "Выводит ответ",
+                "И снова",
+                fragmented = false
+            )
+        }
         slide {
             +replTitle
             +why
@@ -104,28 +244,36 @@ slides {
         }
         slide {
             +replTitle
-            +regular { "IDEA > Tools > Kotlin > Kotlin REPL (Experimental)" }
-            +img("REPL.png") //Укрупнить
-            +note {
-                """
-                Зачем нужен REPL: максимально быстро получить обратную связь
-                по коду
-            """.trimIndent()
-            }
+            +smallTitle { "Альтернативы" }
+        }
+        slide {
+            +replTitle
+            +smallTitle { "Альтернативы" }
+            +unorderedListOf(
+                "Groovy Shell",
+                "JShell",
+                "JSH",
+                "JBang (использует JShell)"
+            )
         }
         slide {
             +replTitle
             +regular { "SHELL" }
             +img("repl_shell.png")
+        }
+        slide {
+            +replTitle
+            +regular { "IJ IDEA > Tools > Kotlin > Kotlin REPL (Experimental)" }
+            +img("REPL.png") //Укрупнить
             +note {
                 """
-                Зачем нужен REPL: максимально быстро получить обратную связь
-                по коду
-            """.trimIndent()
+                    Зачем нужен REPL: максимально быстро получить обратную связь по коду
+                """.trimIndent()
             }
         }
     }
 
+    //JUPYTER
     verticalSlide {
         val jupyterTitle = smallTitle { "Kotlin для Jupiter Notebook" }
         slide {
@@ -138,14 +286,17 @@ slides {
             }
             +note {
                 """
-                    Думаю, не нужно объяснять, что такое ноутбуки для DS
+                    Jupyter-ноутбук — это среда разработки, где сразу можно видеть 
+                    результат выполнения кода и его отдельных фрагментов.
+                    Упомянуть про доклад Нозика
                 """.trimIndent()
             }
         }
     }
 
+    //BASH
     verticalSlide {
-        val autoTitle = smallTitle { "замена BASH-скриптов в автоматизации задач" }
+        val autoTitle = smallTitle { "Замена BASH-скриптов в автоматизации задач" }
         slide {
             +autoTitle
         }
@@ -186,6 +337,18 @@ slides {
         }
 
         slide {
+            +smallTitle { "Альтернативы" }
+            +unorderedListOf(
+                "Java 22",
+                "Groovy",
+                "JShell",
+                "JBang (Java, Kotlin, Groovy)",
+                "Blaze",
+                "KScript",
+            )
+        }
+
+        slide {
             +autoTitle
             +smallTitle { "Скрипты .kts" }
             +kotlinCode {
@@ -215,7 +378,7 @@ slides {
         slide {
             +mainKtsTitle
             +unorderedListOf(
-                "Подключение сторонних библиотек",
+                "Подключение репозиториев и библиотек",
                 "Конфигурация комплятора в самом скрипте",
                 "Удобная работа \"из коробки\"",
             )
@@ -242,6 +405,7 @@ slides {
         }
     }
 
+    //Embed
     verticalSlide {
         val scriptEngineTitle = smallTitle { "Встраивание скриптового движка в приложение" }
         slide {
@@ -261,6 +425,28 @@ slides {
         }
     }
 
+    //JSR223
+    verticalSlide {
+        slide {
+            +mediumTitle { "Java Scripting API" }
+            +mediumTitle { "(JSR223)" }
+        }
+        slide {
+            +mediumTitle { "Абстракция в JVM для исполнения скриптов" }
+        }
+        slide {
+            +mediumTitle { "Kotlin Script > JSR223" }
+        }
+        slide {
+            +mediumTitle { "Kotlin Script" }
+            +unorderedListOf(
+                "Компиляция",
+                "Исполнение",
+                "Работа с IDE"
+            )
+        }
+    }
+
     verticalSlide {
         val componentsTitle = title { "Основные компоненты скриптинга" }
         slide {
@@ -270,7 +456,7 @@ slides {
             +componentsTitle
             +unorderedListOf(
                 listOf(
-                    "Script Definition", //Associate this
+                    "Script Definition", //Визуализация и ассоциация
                     "Script Loader",
                 )
             )
@@ -325,45 +511,6 @@ slides {
             )
         }
 
-        val implRecTitle = smallTitle { "Receivers" }
-        slide {
-            +implRecTitle
-            +note {
-                """
-                    Небольшое отступление, рассказ, что такое receivers,
-                    чем implicit отличается от explicit
-                    Receiver - понятие из классического ООП с определением как обмен сообщениями
-                    Receiver - получатель
-                    Sender - отправитель
-                    Т.е., в нашем случае - Sender вызывает метод у Receiver
-                """.trimIndent()
-            }
-        }
-        slide {
-            +implRecTitle
-            +kotlinCode {
-                """
-                    class MyClass {
-                        fun doSomething() = TODO()
-                        
-                        fun explicitReceiver() {
-                            this.doSomething()
-                        }
-                        
-                        fun implicitReceiver() {
-                            doSomething()
-                        }
-                    }
-                """.trimIndent()
-            }
-            +note {
-                """
-                    Explicit - когда мы явно указываем получателя (т.е. в этом случае - this)
-                    Implicit - неявно, просто вызываем метод, опуская this
-                """.trimIndent()
-            }
-        }
-
         slide {
             +compilationTitle
             +exampleTitle
@@ -380,10 +527,32 @@ slides {
                         ide {
                             acceptedLocations(ScriptAcceptedLocation.Everywhere)
                         }
-                        
                         //Костыль, без которого скриптинг не работает после версии 1.7.20
                         compilerOptions.append("-Xadd-modules=ALL-MODULE-PATH") 
                     })
+                """.trimIndent()
+            }
+        }
+        slide {
+            +compilationTitle
+            +exampleTitle
+            +regular("MyShinyBuilder.kt")
+            +kotlinCode {
+                """
+                    class MyShinyBuilder {
+                        var shinyProperty: String = ""
+                        fun shinyPrint() {
+                            println(shinyProperty)
+                        }
+                    }
+                """.trimIndent()
+            }
+            +regular("example.shiny.kts")
+            +kotlinCode {
+                """
+                    //this: MyShinyBuilder
+                    shinyProperty = "Hello from my script"
+                    shinyPrint()
                 """.trimIndent()
             }
         }
@@ -415,6 +584,29 @@ slides {
                             )
                         }
                     }
+                """.trimIndent()
+            }
+        }
+        slide {
+            +compilationTitle
+            +smallTitle { "Внешние зависимости" } //Добавить пример
+            +regular("example.shiny.kts")
+            +kotlinCode {
+                """
+                    @file:Repository("https://repo1.maven.org/maven2/") //По умолчанию уже подключен
+                    @file:DependsOn("org.jetbrains.kotlinx:kotlinx-cli-jvm:0.3.6")
+
+                    import kotlinx.cli.ArgParser
+                    import kotlinx.cli.ArgType
+                    import kotlinx.cli.default
+                    import kotlinx.cli.required
+
+                    val parser = ArgParser("example")
+                    val input by parser.option(ArgType.String, shortName = "i",
+                        description = "Input file").required()
+                    val debug by parser.option(ArgType.Boolean, shortName = "d",
+                        description = "Turn on debug mode").default(false)
+                    parser.parse(args)
                 """.trimIndent()
             }
         }
@@ -545,31 +737,6 @@ slides {
     }
 
     verticalSlide {
-        //TODO: куда поставить?
-        val jsrVsKotlinTitle = title { "Kotlin Script VS JSR223" }
-        slide {
-            +jsrVsKotlinTitle
-        }
-
-        val jsrTitle = smallTitle { "JSR223" }
-        slide {
-            +jsrTitle
-        }
-        slide {
-            +jsrTitle
-            +smallTitle { "Абстракция в JVM для скриптовых движков" }
-        }
-        slide {
-            +jsrTitle
-            +unorderedListOf(
-                "Общий интерфейс для исполнения",
-                "Даёт общий интерфейс",
-                "Даёт общий интерфейс",
-            )
-        }
-    }
-
-    verticalSlide {
         val securityTitle = smallTitle { "Безопасность в Kotlin Script" }
         slide {
             +securityTitle
@@ -577,9 +744,22 @@ slides {
         slide {
             +securityTitle
             +unorderedListOf(
-                "Ограничение по модулям",
+                "Ограничение по модулям JVM",
                 "Ограничение по доступным классам"
             )
+        }
+
+        slide {
+            +smallTitle { "Альтернативы?" }
+        }
+        slide {
+            +smallTitle { "В перспективе - WASM-WASI" }
+            +note {
+                """
+                    Есть мощные ограничения по рантайму,
+                    включающие сеть, диск и т.д.
+                """.trimIndent()
+            }
         }
     }
 
@@ -591,15 +771,18 @@ slides {
         slide {
             +minusesTitle
             +unorderedListOf(
+                "Компилятор Kotlin в приложении",
                 "Слабая поддержка в IDE",
                 "Мало документации",
                 "Только на JVM",
                 "Долгий старт",
                 "Общая сырость, баги",
+                "Проблемы с применением плагинов компилятора"
             )
             +note {
                 """
-                    Привести примеры - не работает подсветка в @import
+                    Привести примеры - не работает подсветка c @import
+                    Проблемы с необходимостью проекта gradle для подсветки
                 """.trimIndent()
             }
         }
@@ -607,14 +790,6 @@ slides {
 
     slide {
         +title { "Ссылка на презентацию и полезные штуки" }
-        +qrCode("https://github.com/LimeBeck/kotlin-script-presentation") {
-            stretch = true
-            transformBuilder {
-                val logo = loadAsset("logo2.png")
-                it.withSize(20)
-                    .withColor(Colors.css("#B125EA"))
-                    .withLogo(logo, 150, 150, clearLogoArea = true)
-            }
-        }
+        +qr("https://github.com/LimeBeck/kotlin-script-presentation")
     }
 }

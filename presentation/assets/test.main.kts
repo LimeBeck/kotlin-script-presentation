@@ -1,14 +1,14 @@
 #!/usr/bin/env kotlin
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-cli-jvm:0.3.6")
 
-import kotlinx.cli.ArgParser
-import kotlinx.cli.ArgType
-import kotlinx.cli.default
-import kotlinx.cli.required
+import kotlinx.cli.*; import java.io.File;
 
-val parser = ArgParser("example")
+val parser = ArgParser("copyIndexed")
 val input by parser.option(ArgType.String, shortName = "i",
     description = "Input file").required()
-val debug by parser.option(ArgType.Boolean, shortName = "d",
-    description = "Turn on debug mode").default(false)
 parser.parse(args)
+val file = File(input)
+file.useLines {
+    it.mapIndexed { index, line -> "$index - $line" }
+        .forEach { File("${file.name}-copy").appendText(it) }
+}

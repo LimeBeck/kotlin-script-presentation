@@ -7,8 +7,11 @@ import qrcode.color.Colors
 
 title = "Kotlin Script: для кого, зачем и как"
 
-fun kotlinCode(id: ID = UuidGenerator.generateId(), block: () -> String) =
-    code(id = id, lang = "kotlin", block = block)
+fun kotlinCode(
+    id: ID = UuidGenerator.generateId(),
+    lines: String = "",
+    block: () -> String
+) = code(id = id, lang = "kotlin", lines = lines, block = block)
 
 fun qr(data: String) = qrCode(data) {
     stretch = true
@@ -20,6 +23,7 @@ fun qr(data: String) = qrCode(data) {
     }
 }
 
+val `$` = "$"
 
 configuration {
     theme = RevealKt.Configuration.Theme.Predefined.BLACK
@@ -30,7 +34,7 @@ slides {
     verticalSlide {
         slide {
             +title { "Kotlin Script" }
-            +title { "кому, зачем и как" }
+            +title { "для кого, зачем и как" }
         }
     }
 
@@ -47,8 +51,8 @@ slides {
                     +unorderedListOf(
                         listOf(
                             "Техлид JVM Backend в Банке Центр-инвест",
-                            "Фанат Kotlin",
                             "Пишу на Kotlin больше 5 лет",
+                            "Фанат Kotlin",
                             "Написал эту презентацию на Kotlin"
                         ),
                         fragmented = false
@@ -63,9 +67,67 @@ slides {
 
     verticalSlide {
         slide {
-            +title { "Позиционирование Kotlin Scripting" }
-            +smallTitle { "От Jetbrains" }
+            +smallTitle { "Примеры использования" }
         }
+
+        slide {
+            +smallTitle { "build.gradle.kts" }
+            +kotlinCode {
+                loadAsset("examples/build.gradle.kts").decodeToString()
+            }
+        }
+
+        slide {
+            +smallTitle { "Простое CLI приложение" }
+            +kotlinCode {
+                loadAsset("test.main.kts").decodeToString()
+            }
+        }
+
+//        slide {
+//            +smallTitle { "Jetbrains Teamcity CI/CD DSL" }
+//            +kotlinCode {
+//                loadAsset("examples/teamcity.settings.kts").decodeToString()
+//            }
+//        }
+
+        slide {
+            +smallTitle { "Jetbrains Space CI/CD DSL" }
+            +kotlinCode {
+                loadAsset("examples/example.space.kts").decodeToString()
+            }
+        }
+
+        slide {
+            +smallTitle { "Github Workflows Kt" }
+            +kotlinCode(
+//                lines = "1-3|4-6"
+            ) {
+                loadAsset("examples/github.main.kts").decodeToString()
+            }
+        }
+
+        slide {
+            +smallTitle { "Live-Plugin" }
+            +smallTitle { "(простые плагины для IDEA)" }
+            +kotlinCode(id = ID("live-plugin-code")) {
+                loadAsset("examples/liveplugin.kts").decodeToString()
+            }
+        }
+
+        slide {
+            +smallTitle { "Презентации с Reveal-Kt" }
+            +kotlinCode {
+                loadAsset("examples/example.reveal.kts").decodeToString()
+            }
+        }
+    }
+
+    verticalSlide {
+        slide {
+            +smallTitle { "Позиционирование Kotlin Scripting От Jetbrains" }
+        }
+
         slide {
             +title { "KEEP: Kotlin Scripting support" }
             +smallTitle { "Applications" }
@@ -107,108 +169,6 @@ slides {
                     Называть причину по каждому пункту
                     К REPL можно отнести и Jupyter Kotlin
                 """.trimIndent()
-            }
-        }
-    }
-
-
-    verticalSlide {
-        slide {
-            +smallTitle { "Примеры использования" }
-        }
-        slide {
-            +smallTitle { "Jetbrains Space CI/CD DSL" }
-            +kotlinCode {
-                """
-                @file:DependsOn("com.squareup.okhttp:okhttp:2.7.4")
-
-                import com.squareup.okhttp.*
-                
-                job("Get example.com") {
-                    container(image = "amazoncorretto:17-alpine") {
-                        kotlinScript {
-                            val client = OkHttpClient()
-                            val request = Request.Builder().url("http://example.com").build()
-                            val response = client.newCall(request).execute()
-                            println(response)
-                        }
-                    }
-                }
-            """.trimIndent()
-            }
-        }
-
-        slide {
-            +smallTitle { "Github Workflows Kt" }
-            +kotlinCode {
-                """
-                    #!/usr/bin/env kotlin
-                    @file:DependsOn("io.github.typesafegithub:github-workflows-kt:1.13.0")
-
-                    import ...
-
-                    workflow(name = "Build", on = listOf(PullRequest()), sourceFile = __FILE__.toPath()) {
-                        job(id = "build", runsOn = UbuntuLatest) {
-                            uses(action = CheckoutV4())
-                            uses(action = SetupJavaV3())
-                            uses(
-                                name = "Build",
-                                action = GradleBuildActionV2(
-                                    arguments = "build",
-                                )
-                            )
-                        }
-                    }.writeToFile()
-                """.trimIndent()
-            }
-        }
-
-        slide {
-            +smallTitle { "Презентации с Reveal-Kt" }
-            +kotlinCode {
-                """
-                    title = "My awesome presentation"
-
-                    configuration {
-                        controls = false
-                        progress = false
-                    }
-                    
-                    slides {
-                        slide {
-                            autoanimate = true
-                            +title { "Hello from my awesome presentation" }
-                        }
-                    }
-                """.trimIndent()
-            }
-        }
-
-        slide {
-            +smallTitle { "Live-Plugin" }
-            +kotlinCode(id = ID("live-plugin-code")) {
-                """
-                    import com.intellij.openapi.actionSystem.AnActionEvent
-                    import liveplugin.*
-
-                    registerAction(id = "Insert New Line Above", keyStroke = "ctrl alt shift ENTER") { event ->
-                        val project = event.project ?: return@registerAction
-                        val editor = event.editor ?: return@registerAction
-                        executeCommand(editor.document, project) { document ->
-                            val caretModel = editor.caretModel
-                            val lineStartOffset = document.getLineStartOffset(caretModel.logicalPosition.line)
-                            document.insertString(lineStartOffset, "\n")
-                            caretModel.moveToOffset(caretModel.offset + 1)
-                        }
-                    }
-                    show("Loaded 'Insert New Line Above' action<br/>Use 'ctrl+alt+shift+Enter' to run it")
-                """.trimIndent()
-            }
-        }
-        slide {
-            +smallTitle { "Простое CLI приложение" }
-            +kotlinCode {
-                loadAsset("test.main.kts").decodeToString()
             }
         }
     }
@@ -290,6 +250,11 @@ slides {
                     результат выполнения кода и его отдельных фрагментов.
                     Упомянуть про доклад Нозика
                 """.trimIndent()
+            } //Вставить фото доклада
+        }
+        slide {
+            +img("./kotlin-notebooks-conf.png") {
+                stretch = true
             }
         }
     }
@@ -301,7 +266,7 @@ slides {
             +autoTitle
         }
 
-        val why = smallTitle { "Зачем?" }
+        val why = smallTitle { "Зачем заменять BASH?" }
         val thatsWhyNote = note {
             """
                 Рассказать, какая боль - писать скрипты на баше.
@@ -316,10 +281,21 @@ slides {
         }
         slide {
             +why
+            +regular("Bash")
             +code(lang = "bash") {
                 """
                     # Нумеруем строки в файле
                     sed = a.txt | sed 'N; s/^/ /; s/ *\(.\{4,\}\)\n/\1 /'
+                """.trimIndent()
+            } // сразу тут пример на котлине + массив файлов
+            +regular("Kotlin")
+            +kotlinCode {
+                """
+                    import java.io.File
+
+                    File("a.txt").useLines { 
+                        it.forEachIndexed { i, l -> println("$`$`i: $`$`l") } 
+                    }
                 """.trimIndent()
             }
         }
@@ -327,13 +303,20 @@ slides {
             +why
             +unorderedListOf(
                 "Сложные скрипты на Bash - боль",
-                "Управлять зависимостями Python - тоже боль",
-                "Экосистема JVM",
-                "Удобство Kotlin",
-                "Типобезопасность на уровне компиляции"
+                "Bash - write-only код",
+                "Зависимости на Bash?",
             )
             +thatsWhyNote
-            //TODO: Добавить пример на awk/sed + ci/cd
+        }
+
+        slide {
+            +smallTitle { "Почему именно Kotlin Script" }
+            +unorderedListOf(
+                "Богатая экосистема JVM",
+                "Зависимости не в системе",
+                "Удобство Kotlin DSL",
+                "Типобезопасность на уровне компиляции",
+            )
         }
 
         slide {
@@ -341,9 +324,7 @@ slides {
             +unorderedListOf(
                 "Java 22",
                 "Groovy",
-                "JShell",
                 "JBang (Java, Kotlin, Groovy)",
-                "Blaze",
                 "KScript",
             )
         }
@@ -387,6 +368,7 @@ slides {
             +mainKtsTitle
             +kotlinCode {
                 loadAsset("test.main.kts").decodeToString()
+                //Аннотации не видно в этой теме
             }
         }
         slide {
@@ -452,6 +434,12 @@ slides {
         slide {
             +componentsTitle
         }
+        slide {
+            +componentsTitle
+            +img("./img.png") {
+                stretch = true
+            }
+        }
         slide {//Добавить схему
             +componentsTitle
             +unorderedListOf(
@@ -488,7 +476,8 @@ slides {
                     @KotlinScript(
                         fileExtension = "shiny.kts",
                     )
-                    abstract class MyShinyKtScript //Класс обязательно должен быть открытым или абстрактным
+                    abstract class MyShinyKtScript 
+                    //Класс обязательно должен быть открытым или абстрактным
                 """.trimIndent()
             }
         }
@@ -527,8 +516,6 @@ slides {
                         ide {
                             acceptedLocations(ScriptAcceptedLocation.Everywhere)
                         }
-                        //Костыль, без которого скриптинг не работает после версии 1.7.20
-                        compilerOptions.append("-Xadd-modules=ALL-MODULE-PATH") 
                     })
                 """.trimIndent()
             }
@@ -684,13 +671,9 @@ slides {
                         scriptFile: File
                     ): ResultWithDiagnostics<EvaluationResult> {
                         val compilationConfiguration = 
-                            createJvmCompilationConfigurationFromTemplate<MyShinyScript> { 
-                                //Тут мы можем дополнить и переопределить конфигурацию при необходимости
-                            }
+                            createJvmCompilationConfigurationFromTemplate<MyShinyScript> {}
                         val evaluationConfiguration = 
-                            createJvmEvaluationConfigurationFromTemplate<MyShinyScript> {
-                                //Тут мы можем дополнить и переопределить конфигурацию при необходимости
-                            }
+                            createJvmEvaluationConfigurationFromTemplate<MyShinyScript> {}
                         return eval(
                             script = scriptFile.toScriptSource(),
                             compilationConfiguration = compilationConfiguration,
@@ -747,19 +730,7 @@ slides {
                 "Ограничение по модулям JVM",
                 "Ограничение по доступным классам"
             )
-        }
-
-        slide {
-            +smallTitle { "Альтернативы?" }
-        }
-        slide {
-            +smallTitle { "В перспективе - WASM-WASI" }
-            +note {
-                """
-                    Есть мощные ограничения по рантайму,
-                    включающие сеть, диск и т.д.
-                """.trimIndent()
-            }
+            //Безопасности нет - раскрыть
         }
     }
 
@@ -787,6 +758,8 @@ slides {
             }
         }
     }
+
+    //Выводы
 
     slide {
         +title { "Ссылка на презентацию и полезные штуки" }

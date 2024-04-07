@@ -14,6 +14,7 @@ repositories {
 
 dependencies {
     implementation("dev.limebeck:revealkt-script-definition:$revealKtVersion")
+    implementation("dev.limebeck:gitlab-ci-script-definition:1.0.0")
 }
 
 //sourceSets {}

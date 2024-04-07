@@ -1,7 +1,8 @@
 #!/usr/bin/env kotlin
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-cli-jvm:0.3.6")
 
-import kotlinx.cli.*; import java.io.File;
+import kotlinx.cli.*;
+import java.io.File;
 
 val parser = ArgParser("copyIndexed")
 val input by parser.option(ArgType.String, shortName = "i",

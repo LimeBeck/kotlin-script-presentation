@@ -92,3 +92,9 @@ code.hljs {
 .hljs-link {
     text-decoration: underline
 }
+
+:root {
+    --r-heading-color: #50B848;
+    --r-link-color: #50B848;
+    --r-selection-color: #abb2bf;
+}

@@ -3,15 +3,16 @@
 import dev.limebeck.revealkt.core.RevealKt
 import dev.limebeck.revealkt.utils.ID
 import dev.limebeck.revealkt.utils.UuidGenerator
+import kotlinx.html.br
 import qrcode.color.Colors
 
 title = "Kotlin Script: для кого, зачем и как"
 
 fun kotlinCode(
     id: ID = UuidGenerator.generateId(),
-    lines: String = "",
+    lines: String? = null,
     block: () -> String
-) = code(id = id, lang = "kotlin", lines = lines, block = block)
+) = Code(id = id, lang = "kotlin", lines = lines, codeProvider = block)
 
 fun qr(data: String) = qrCode(data) {
     stretch = true
@@ -206,25 +207,89 @@ slides {
             +replTitle
             +smallTitle { "Альтернативы" }
         }
+//        slide {
+//            +replTitle
+//            +smallTitle { "Альтернативы" }
+//            +unorderedListOf(
+//                "Groovy Shell",
+//                "JShell",
+//                "JSH",
+//                "JBang (использует JShell)"
+//            )
+//        }
         slide {
             +replTitle
-            +smallTitle { "Альтернативы" }
-            +unorderedListOf(
-                "Groovy Shell",
-                "JShell",
-                "JSH",
-                "JBang (использует JShell)"
-            )
+            +smallTitle { "JShell" }
+            +code(lang = "java") {
+                """
+                    > jshell 
+                    |  Welcome to JShell -- Version 17.0.4.1
+                    |  For an introduction type: /help intro
+                    
+                    jshell> var hello = "Hello, world!"
+                    hello ==> "Hello, world!"
+                    
+                    jshell> System.out.println(hello)
+                    Hello, world!
+                """.trimIndent()
+            }
+            +note {
+                """
+                    +Встроен в jdk, -нет зависимостей
+                """.trimIndent()
+            }
         }
         slide {
             +replTitle
-            +regular { "SHELL" }
-            +img("repl_shell.png")
+            +smallTitle { "Groovy Shell" }
+            +code(lang = "groovy") {
+                """
+                    > groovysh
+                    Groovy Shell (4.0.20, JVM: 17.0.4.1)
+                    Type ':help' or ':h' for help.
+                    -------------------------------------------------
+                    groovy:000> hello = 'Hello, World!'
+                    ===> Hello, World!
+                    groovy:000> println hello
+                    Hello, World!
+                    ===> null
+                """.trimIndent()
+            }
+            +note {
+                """
+                    +есть зависимости
+                    +проще писать благодаря Groovy
+                    -нужно тянуть Groovy
+                """.trimIndent()
+            }
         }
         slide {
             +replTitle
+            +smallTitle { "Kotlin SHELL" }
+            +kotlinCode {
+                """
+                    > kotlin
+                    Welcome to Kotlin version 1.9.22 (JRE 17.0.4.1+1-LTS)
+                    Type :help for help, :quit for quit
+                    >>> val hello = "Hello, World!"
+                    >>> println(hello)
+                    Hello, World!
+                """.trimIndent()
+            }
+//            +img("repl_shell.png") {
+//                stretch = true
+//            }
+        }
+        slide {
+            +replTitle
+            +smallTitle { "IJ IDEA Kotlin REPL" }
+            +img("REPL.png") {
+                stretch = true
+            } //Укрупнить
+            +HtmlDslElement {
+                br {  }
+            }
             +regular { "IJ IDEA > Tools > Kotlin > Kotlin REPL (Experimental)" }
-            +img("REPL.png") //Укрупнить
             +note {
                 """
                     Зачем нужен REPL: максимально быстро получить обратную связь по коду
@@ -250,7 +315,7 @@ slides {
                     результат выполнения кода и его отдельных фрагментов.
                     Упомянуть про доклад Нозика
                 """.trimIndent()
-            } //Вставить фото доклада
+            }
         }
         slide {
             +img("./kotlin-notebooks-conf.png") {
@@ -366,9 +431,8 @@ slides {
         }
         slide {
             +mainKtsTitle
-            +kotlinCode {
+            +kotlinCode(lines = "2|4|7-10|12-15") {
                 loadAsset("test.main.kts").decodeToString()
-                //Аннотации не видно в этой теме
             }
         }
         slide {
@@ -397,37 +461,88 @@ slides {
         slide {
             +why
         }
+//        slide {
+//            +why
+//            +unorderedListOf(
+//                "конфигурация через \"Typesafe DSL\"",
+//                "микроядерная архитектура (плагины)",
+//                "кастомизация действий пользователем"
+//            )
+//        }
         slide {
-            +why
-            +unorderedListOf(
-                "конфигурация через \"Typesafe DSL\"",
-                "микроядерная архитектура (плагины)",
-                "кастомизация действий пользователем"
-            )
+            +smallTitle { "конфигурация через" }
+            +smallTitle { "\"Typesafe DSL\"" }
+            +kotlinCode {
+                loadAsset("examples/build.gradle.kts").decodeToString()
+            }
+        }
+        slide {
+            +smallTitle { "конфигурация через" }
+            +smallTitle { "\"Typesafe DSL\"" }
+            +kotlinCode {
+                loadAsset("examples/example.reveal.kts").decodeToString()
+            }
+        }
+
+        slide {
+            +smallTitle { "микроядерная архитектура" }
+            +smallTitle { "(плагинная архитектура)" }
+            +img("./plugin-arch.png") {
+                stretch = true
+            }
+        }
+
+        slide {
+            +smallTitle { "кастомизация действий пользователем" }
+            +img("./workflow-engine.png") {
+                stretch = true
+            }
+        }
+
+        slide {
+            +smallTitle { "кастомизация действий пользователем" }
+            +kotlinCode {
+                """
+                    val userId = ctx["USER_ID"] as? String 
+                        ?: throw NoSuchPropertyException("USER_ID was not found")
+                    
+                    ctx["USER_DATA"] = ctx.withDatabaseConnectionOf("USERS_DB") { db ->
+                        db.select()
+                            .from(UsersTable)
+                            .where(UsersTable.ID eq userId)
+                            .fetchOne { r ->
+                                User(
+                                    id = r[UsersTable.ID], 
+                                    name = r[UsersTable.NAME]
+                                 )
+                            }
+                    }
+                """.trimIndent()
+            }
         }
     }
 
     //JSR223
-    verticalSlide {
-        slide {
-            +mediumTitle { "Java Scripting API" }
-            +mediumTitle { "(JSR223)" }
-        }
-        slide {
-            +mediumTitle { "Абстракция в JVM для исполнения скриптов" }
-        }
-        slide {
-            +mediumTitle { "Kotlin Script > JSR223" }
-        }
-        slide {
-            +mediumTitle { "Kotlin Script" }
-            +unorderedListOf(
-                "Компиляция",
-                "Исполнение",
-                "Работа с IDE"
-            )
-        }
-    }
+//    verticalSlide {
+//        slide {
+//            +mediumTitle { "Java Scripting API" }
+//            +mediumTitle { "(JSR223)" }
+//        }
+//        slide {
+//            +mediumTitle { "Абстракция в JVM для исполнения скриптов" }
+//        }
+//        slide {
+//            +mediumTitle { "Kotlin Script > JSR223" }
+//        }
+//        slide {
+//            +mediumTitle { "Kotlin Script" }
+//            +unorderedListOf(
+//                "Компиляция",
+//                "Исполнение",
+//                "Работа с IDE"
+//            )
+//        }
+//    }
 
     verticalSlide {
         val componentsTitle = title { "Основные компоненты скриптинга" }
@@ -436,7 +551,7 @@ slides {
         }
         slide {
             +componentsTitle
-            +img("./img.png") {
+            +img("./scripting-components.svg") {
                 stretch = true
             }
         }
@@ -444,30 +559,29 @@ slides {
             +componentsTitle
             +unorderedListOf(
                 listOf(
-                    "Script Definition", //Визуализация и ассоциация
-                    "Script Loader",
+                    "Описание скрипта - Script Definition", //Визуализация и ассоциация
+                    "Исполнение скрипта - Script Loader",
                 )
             )
         }
     }
 
     verticalSlide {
-        val scriptDefTitle = smallTitle { "Script Definition" }
         slide {
-            +scriptDefTitle
+            +smallTitle { "Описание скрипта" }
+            +smallTitle { "(Script Definition)" }
         }
         slide {
-            +scriptDefTitle
-            +smallTitle { "\"Look and feel\"" }
-        }
-        slide {
-            +scriptDefTitle
-            +unorderedListOf(
-                listOf(
-                    "Конфигурация компиляции",
-                    "Конфигурация выполнения",
-                )
-            )
+            +smallTitle { "Script Definition" }
+            +img("./img_1.png") {
+                stretch = true
+            }
+//            +unorderedListOf(
+//                listOf(
+//                    "Конфигурация компиляции",
+//                    "Конфигурация выполнения",
+//                )
+//            )
         }
         slide {
             +smallTitle { "Базовый пример" }
@@ -503,7 +617,9 @@ slides {
         slide {
             +compilationTitle
             +exampleTitle
-            +kotlinCode {
+            +kotlinCode(
+                lines = "1|2|3"
+            ) {
                 """
                     object MyShinyScriptCompilationConfiguration : ScriptCompilationConfiguration({
                         jvm {

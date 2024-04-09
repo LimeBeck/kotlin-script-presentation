@@ -561,7 +561,7 @@ slides {
             +unorderedListOf(
                 listOf(
                     "Описание скрипта - Script Definition", //Визуализация и ассоциация
-                    "Исполнение скрипта - Script Loader",
+                    "Исполнение скрипта - Scripting Host",
                 )
             )
         }
@@ -577,6 +577,7 @@ slides {
             +img("./img_1.png") {
                 stretch = true
             }
+            //TODO: Host configuration
         }
         val baseExampleTitle = smallTitle { "Базовый пример" }
         val gitlabCiId = ID("gitlab-ci.kts")

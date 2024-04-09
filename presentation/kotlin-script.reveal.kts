@@ -411,18 +411,13 @@ slides {
             +unorderedListOf(
                 "Подключение репозиториев и библиотек",
                 "Конфигурация комплятора в самом скрипте",
+                "Кэширование между запусками",
                 "Удобная работа \"из коробки\"",
             )
         }
         slide {
             +mainKtsTitle
-            +kotlinCode {
-                loadAsset("test.main.kts").decodeToString()
-            }
-        }
-        slide {
-            +mainKtsTitle
-            +kotlinCode(lines = "2|4,7-10|11-15") {
+            +kotlinCode(lines = "|2|4,7-10|11-15") {
                 loadAsset("test.main.kts").decodeToString()
             }
         }
@@ -452,14 +447,6 @@ slides {
         slide {
             +why
         }
-//        slide {
-//            +why
-//            +unorderedListOf(
-//                "конфигурация через \"Typesafe DSL\"",
-//                "микроядерная архитектура (плагины)",
-//                "кастомизация действий пользователем"
-//            )
-//        }
         slide {
             +smallTitle { "конфигурация через" }
             +smallTitle { "\"Typesafe DSL\"" }
@@ -541,7 +528,7 @@ slides {
             +smallTitle { "Практика" }
         }
         slide {
-            +smallTitle { "Gitlab-CI-kts" }
+            +smallTitle { "Gitlab-CI.kts" }
             +kotlinCode {
                 """
                     listOf("dev-0", "dev-1", "dev-2").forEach {
@@ -591,15 +578,41 @@ slides {
                 stretch = true
             }
         }
+        val baseExampleTitle = smallTitle { "Базовый пример" }
+        val gitlabCiId = ID("gitlab-ci.kts")
         slide {
-            +smallTitle { "Базовый пример" }
-            +kotlinCode {
+            +baseExampleTitle
+            +kotlinCode(gitlabCiId, lines = "|1,4-6|2|3|") {
                 """
                     @KotlinScript(
-                        fileExtension = "shiny.kts",
+                        fileExtension = "gitlab-ci.kts",
+                        displayName = "Gitlab CI Kotlin configuration",
                     )
-                    abstract class MyShinyKtScript 
+                    abstract class GitlabCiKtScript
                     //Класс обязательно должен быть открытым или абстрактным
+                """.trimIndent()
+            }
+        }
+        slide {
+            +baseExampleTitle
+            +kotlinCode(gitlabCiId, lines = "") {
+                """
+                    @KotlinScript(
+                        fileExtension = "gitlab-ci.kts",
+                        displayName = "Gitlab CI Kotlin configuration",
+                    )
+                    abstract class GitlabCiKtScript {
+                        val myProperty = 123
+                    }
+                """.trimIndent()
+            }
+        }
+        slide {
+            +baseExampleTitle
+            +kotlinCode {
+                """
+                    println(myProperty) 
+                    //123
                 """.trimIndent()
             }
         }
@@ -626,20 +639,19 @@ slides {
             +compilationTitle
             +exampleTitle
             +kotlinCode(
-                lines = "1|2|3"
+                lines = "|2|3-8|9|10"
             ) {
                 """
-                    object MyShinyScriptCompilationConfiguration : ScriptCompilationConfiguration({
-                        jvm {
-                            dependenciesFromCurrentContext(wholeClasspath = true)
-                        }
+                    object GitlabCiKtScriptCompilationConfiguration : ScriptCompilationConfiguration({
+                        jvm { dependenciesFromClassContext(PipelineBuilder::class, wholeClasspath = true) }
+                        defaultImports(DependsOn::class, Repository::class)
                         defaultImports(
-                            "dev.limebeck.myshiny.builder.*",
+                            "dev.otbe.gitlab.ci.core.model.*",
+                            "dev.otbe.gitlab.ci.dsl.*",
+                            "dev.otbe.gitlab.ci.core.goesTo"
                         )
-                        implicitReceivers(MyShinyBuilder::class)
-                        ide {
-                            acceptedLocations(ScriptAcceptedLocation.Everywhere)
-                        }
+                        implicitReceivers(PipelineBuilder::class)
+                        ide { acceptedLocations(ScriptAcceptedLocation.Everywhere) }
                     })
                 """.trimIndent()
             }
@@ -647,13 +659,13 @@ slides {
         slide {
             +compilationTitle
             +exampleTitle
-            +regular("MyShinyBuilder.kt")
+            +regular("PipelineBuilder.kt")
             +kotlinCode {
                 """
-                    class MyShinyBuilder {
-                        var shinyProperty: String = ""
-                        fun shinyPrint() {
-                            println(shinyProperty)
+                    class PipelineBuilder {
+                        private var stages: List<Stage> = emptyList()
+                        fun stages(vararg stage: Stage) {
+                            stages = stage.asList()
                         }
                     }
                 """.trimIndent()

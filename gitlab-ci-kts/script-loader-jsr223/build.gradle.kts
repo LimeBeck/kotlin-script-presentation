@@ -25,6 +25,8 @@ dependencies {
     api("org.jetbrains.kotlin:kotlin-scripting-common:$kotlinVersion")
     api("org.jetbrains.kotlin:kotlin-scripting-jvm:$kotlinVersion")
     api("org.jetbrains.kotlin:kotlin-scripting-jvm-host:$kotlinVersion")
+    api("org.jetbrains.kotlin:kotlin-scripting-jsr223:$kotlinVersion")
+    api("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion")
 
     implementation("dev.otbe:gitlab-ci-dsl:0.2.0")
     implementation(project(":gitlab-ci-kts:script-definition"))

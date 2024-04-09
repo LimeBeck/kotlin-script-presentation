@@ -35,7 +35,7 @@ pre[data-id="live-plugin-code"] {
 
 pre code.hljs {
     display: block;
-    overflow-x: auto;
+    overflow-x: hidden;
     padding: 1em
 }
 
@@ -97,4 +97,20 @@ code.hljs {
     --r-heading-color: #50B848;
     --r-link-color: #50B848;
     --r-selection-color: #abb2bf;
+}
+
+::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #abb2bf;
+    border-radius: 20px;
+    border: 6px solid transparent;
+    background-clip: content-box;
 }

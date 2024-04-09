@@ -19,7 +19,8 @@ class GitlabCiKtScriptLoader {
             ?.configuration
             ?.notTransientData
             ?.entries
-            ?.find { it.key.name == "implicitReceivers" }?.value as? List<*>
+            ?.find { it.key.name == "implicitReceivers" }
+            ?.value as? List<*>
 
         val builder = implicitReceivers?.filterIsInstance<PipelineBuilder>()?.firstOrNull()
 

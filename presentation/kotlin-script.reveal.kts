@@ -431,7 +431,13 @@ slides {
         }
         slide {
             +mainKtsTitle
-            +kotlinCode(lines = "2|4|7-10|12-15") {
+            +kotlinCode {
+                loadAsset("test.main.kts").decodeToString()
+            }
+        }
+        slide {
+            +mainKtsTitle
+            +kotlinCode(lines = "2|4,7-10|11-15") {
                 loadAsset("test.main.kts").decodeToString()
             }
         }
@@ -501,6 +507,7 @@ slides {
 
         slide {
             +smallTitle { "кастомизация действий пользователем" }
+            +regular("FIND USER")
             +kotlinCode {
                 """
                     val userId = ctx["USER_ID"] as? String 
@@ -545,6 +552,28 @@ slides {
 //    }
 
     verticalSlide {
+        slide {
+            +smallTitle { "Практика" }
+        }
+        slide {
+            +smallTitle { "Gitlab-CI-kts" }
+            +kotlinCode {
+                """
+                    listOf("dev-0", "dev-1", "dev-2").forEach {
+                        job("build-$`$`it") {
+                            image = Image.of("alpine:latest")
+                            script("echo 'Hello World from $`$`it'")
+                        }
+                        job("deploy-$`$`it") {
+                            image = Image.of("alpine:latest")
+                            script("echo Deployed $`$`it")
+                        }
+                    }
+                """.trimIndent()
+            }
+        }
+    }
+    verticalSlide {
         val componentsTitle = title { "Основные компоненты скриптинга" }
         slide {
             +componentsTitle
@@ -576,12 +605,6 @@ slides {
             +img("./img_1.png") {
                 stretch = true
             }
-//            +unorderedListOf(
-//                listOf(
-//                    "Конфигурация компиляции",
-//                    "Конфигурация выполнения",
-//                )
-//            )
         }
         slide {
             +smallTitle { "Базовый пример" }

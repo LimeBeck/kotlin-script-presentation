@@ -660,7 +660,7 @@ slides {
         slide {
             +compilationTitle
             +exampleTitle
-            +regular("PipelineBuilder.kt")
+            +regular("PipelineBuilder.kt") //TODO: Написать свой DSL - будет проще с примерами
             +kotlinCode {
                 """
                     class PipelineBuilder {

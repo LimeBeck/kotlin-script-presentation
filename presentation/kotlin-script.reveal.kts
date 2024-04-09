@@ -101,9 +101,7 @@ slides {
 
         slide {
             +smallTitle { "Github Workflows Kt" }
-            +kotlinCode(
-//                lines = "1-3|4-6"
-            ) {
+            +kotlinCode {
                 loadAsset("examples/github.main.kts").decodeToString()
             }
         }
@@ -207,16 +205,6 @@ slides {
             +replTitle
             +smallTitle { "Альтернативы" }
         }
-//        slide {
-//            +replTitle
-//            +smallTitle { "Альтернативы" }
-//            +unorderedListOf(
-//                "Groovy Shell",
-//                "JShell",
-//                "JSH",
-//                "JBang (использует JShell)"
-//            )
-//        }
         slide {
             +replTitle
             +smallTitle { "JShell" }
@@ -276,16 +264,13 @@ slides {
                     Hello, World!
                 """.trimIndent()
             }
-//            +img("repl_shell.png") {
-//                stretch = true
-//            }
         }
         slide {
             +replTitle
             +smallTitle { "IJ IDEA Kotlin REPL" }
             +img("REPL.png") {
                 stretch = true
-            } //Укрупнить
+            }
             +HtmlDslElement {
                 br {  }
             }

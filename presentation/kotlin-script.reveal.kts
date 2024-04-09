@@ -1,4 +1,4 @@
-#!/usr/bin/env -S revealkt run
+#!/usr/bin/env -S jbang revealkt@limebeck.dev run
 
 import dev.limebeck.revealkt.core.RevealKt
 import dev.limebeck.revealkt.utils.ID

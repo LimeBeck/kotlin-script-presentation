@@ -16,7 +16,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
     - name: checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v4
     - uses: actions/cache@v1
       with:
         path: /root/.jbang

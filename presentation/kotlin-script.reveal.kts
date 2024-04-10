@@ -29,6 +29,7 @@ val `$` = "$"
 configuration {
     theme = RevealKt.Configuration.Theme.Predefined.BLACK
     additionalCssStyle = loadAsset("additional.css").decodeToString()
+    controls = false
 }
 
 slides {
@@ -552,7 +553,7 @@ slides {
         }
         slide {
             +componentsTitle
-            +img("./scripting-components.svg") {
+            +img("scripting-host.svg") {
                 stretch = true
             }
         }

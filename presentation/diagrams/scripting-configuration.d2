@@ -1,0 +1,42 @@
+direction: right
+vars: {
+  d2-config: {
+    theme-id: 200
+    layout-engine: elk
+    theme-overrides: {
+      N1: "#ffffff"
+      N7: "#191919"
+      B1: "#ffffff"
+    }
+  }
+}
+
+**.style.font-size: 35
+
+bytecode: JVM Classes {
+  near: bottom-center
+}
+
+host: Scripting Host (app) {
+  grid-columns: 2
+  compiler: Compiler
+  evaluator: Evaluator
+}
+
+host.compiler -> bytecode: {
+  style.animated: true
+}
+bytecode -> host.evaluator: {
+  style.animated: true
+}
+
+scriptDef: Script Definition {
+  near: top-center
+  compilation: Compilation configuration
+  host: Host configuration
+  evaluation: Evaluation configuration
+}
+
+host.compiler <- scriptDef.compilation
+host.evaluator <- scriptDef.evaluation
+host <- scriptDef.host

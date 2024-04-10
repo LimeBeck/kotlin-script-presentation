@@ -29,7 +29,7 @@ jobs:
       uses: jbangdev/jbang-action@v0.114.0
       with:
         script: revealkt@limebeck.dev
-        scriptargs: bundle ./presentation/GradlePresentation.reveal.kts
+        scriptargs: bundle ./presentation/kotlin-script.reveal.kts
     - name: Deploy to Netlify
       uses: nwtgck/actions-netlify@v3.0
       with:

@@ -17,6 +17,8 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
+      with:
+        token: ${{secrets.TOKEN}}
     - uses: actions/cache@v1
       with:
         path: /root/.jbang

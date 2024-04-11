@@ -273,7 +273,7 @@ slides {
                 stretch = true
             }
             +HtmlDslElement {
-                br {  }
+                br { }
             }
             +regular { "IJ IDEA > Tools > Kotlin > Kotlin REPL (Experimental)" }
             +note {
@@ -544,6 +544,11 @@ slides {
                     }
                 """.trimIndent()
             }
+            +code(lang = "bash") {
+                """
+                    > java -jar gitlab-cli.jar ./main.gitlab-ci.kts > .gitlab.ci.yaml
+                """.trimIndent()
+            }
         }
     }
     verticalSlide {
@@ -557,13 +562,12 @@ slides {
                 stretch = true
             }
         }
-        slide {//Добавить схему
+        slide {
             +componentsTitle
             +unorderedListOf(
-                listOf(
-                    "Описание скрипта - Script Definition", //Визуализация и ассоциация
-                    "Исполнение скрипта - Scripting Host",
-                )
+                "Описание скрипта - Script Definition",
+                "Исполнение скрипта - Scripting Host",
+                fragmented = false
             )
         }
     }
@@ -573,13 +577,14 @@ slides {
             +smallTitle { "Описание скрипта" }
             +smallTitle { "(Script Definition)" }
         }
+
         slide {
             +smallTitle { "Script Definition" }
-            +img("./img_1.png") {
+            +img("scripting-configuration.svg") {
                 stretch = true
             }
-            //TODO: Host configuration
         }
+
         val baseExampleTitle = smallTitle { "Базовый пример" }
         val gitlabCiId = ID("gitlab-ci.kts")
         slide {
@@ -641,11 +646,13 @@ slides {
             +compilationTitle
             +exampleTitle
             +kotlinCode(
-                lines = "|2|3-8|9|10"
+                lines = "|2-4|5-10|11|12"
             ) {
                 """
                     object GitlabCiKtScriptCompilationConfiguration : ScriptCompilationConfiguration({
-                        jvm { dependenciesFromClassContext(PipelineBuilder::class, wholeClasspath = true) }
+                        jvm { 
+                            dependenciesFromClassContext(PipelineBuilder::class, wholeClasspath = true) 
+                        }
                         defaultImports(DependsOn::class, Repository::class)
                         defaultImports(
                             "dev.otbe.gitlab.ci.core.model.*",
@@ -672,66 +679,75 @@ slides {
                     }
                 """.trimIndent()
             }
-            +regular("example.shiny.kts")
+            +regular("example.gitlab-ci.kts")
             +kotlinCode {
                 """
-                    //this: MyShinyBuilder
-                    shinyProperty = "Hello from my script"
-                    shinyPrint()
+                    //this: PipelineBuilder
+                    stages("build", "deploy")
                 """.trimIndent()
             }
         }
         slide {
             +compilationTitle
             +exampleTitle
-            +kotlinCode {
+            +kotlinCode(lines = "4") {
                 """
                     @KotlinScript(
-                        fileExtension = "shiny.kts",
-                        compilationConfiguration = MyShinyScriptCompilationConfiguration::class,
+                        fileExtension = "gitlab-ci.kts",
+                        displayName = "Gitlab CI Kotlin configuration",
+                        compilationConfiguration = GitlabCiKtScriptCompilationConfiguration::class,
                     )
-                    abstract class MyShinyKtScript
+                    abstract class GitlabCiKtScript
                 """.trimIndent()
             }
         }
+        val externalDeps = smallTitle { "Внешние зависимости" }
         slide {
             +compilationTitle
-            +smallTitle { "Внешние зависимости" } //Добавить пример
-            +kotlinCode {
+            +externalDeps
+            +kotlinCode(lines = "2-9") {
                 """
-                    object MyShinyScriptCompilationConfiguration : ScriptCompilationConfiguration({
+                    object GitlabCiKtScriptCompilationConfiguration : ScriptCompilationConfiguration({
                         refineConfiguration {
-                            // Process specified annotations with the provided handler
                             onAnnotations(
                                 DependsOn::class,
                                 Repository::class,
+                                // Обработчик аннотаций
                                 handler = ::configureMavenDepsOnAnnotations
                             )
                         }
+                        
+                        jvm { 
+                            dependenciesFromClassContext(PipelineBuilder::class, wholeClasspath = true) 
+                        }
+                        defaultImports(DependsOn::class, Repository::class)
+                        defaultImports(
+                            "dev.otbe.gitlab.ci.core.model.*",
+                            "dev.otbe.gitlab.ci.dsl.*",
+                            "dev.otbe.gitlab.ci.core.goesTo"
+                        )
+                        implicitReceivers(PipelineBuilder::class)
+                        ide { acceptedLocations(ScriptAcceptedLocation.Everywhere) }
                     }
                 """.trimIndent()
             }
         }
         slide {
             +compilationTitle
-            +smallTitle { "Внешние зависимости" } //Добавить пример
-            +regular("example.shiny.kts")
+            +externalDeps
+            +regular("example.gitlab-ci.kts")
             +kotlinCode {
                 """
-                    @file:Repository("https://repo1.maven.org/maven2/") //По умолчанию уже подключен
-                    @file:DependsOn("org.jetbrains.kotlinx:kotlinx-cli-jvm:0.3.6")
+                    @file:Repository("https://private-nexus.company.org/ci-templates/")
+                    @file:DependsOn("org.company.ci.templates:jvm-jobs:1.0.0")
 
-                    import kotlinx.cli.ArgParser
-                    import kotlinx.cli.ArgType
-                    import kotlinx.cli.default
-                    import kotlinx.cli.required
-
-                    val parser = ArgParser("example")
-                    val input by parser.option(ArgType.String, shortName = "i",
-                        description = "Input file").required()
-                    val debug by parser.option(ArgType.Boolean, shortName = "d",
-                        description = "Turn on debug mode").default(false)
-                    parser.parse(args)
+                    import org.company.ci.templates.jvm.jobs.*
+                    
+                    val appName = "kotlin-app"
+                    gradleJob {
+                        task = "build"
+                        artifact = "./build/libs/$`$`{appName}.jar"
+                    }
                 """.trimIndent()
             }
         }
@@ -758,16 +774,17 @@ slides {
             +exampleTitle
             +kotlinCode {
                 """
-                    object MyShinyScriptEvaluationConfiguration : ScriptEvaluationConfiguration({
+                    object GitlabCiKtEvaluationConfiguration : ScriptEvaluationConfiguration({
                         scriptsInstancesSharing(false)
                     })
                     
                     @KotlinScript(
-                        fileExtension = "shiny.kts",
-                        compilationConfiguration = MyShinyScriptCompilationConfiguration::class,
-                        evaluationConfiguration = MyShinyScriptEvaluationConfiguration::class,
+                        fileExtension = "gitlab-ci.kts",
+                        displayName = "Gitlab CI Kotlin configuration",
+                        compilationConfiguration = GitlabCiKtScriptCompilationConfiguration::class,
+                        evaluationConfiguration = GitlabCiKtEvaluationConfiguration::class,
                     )
-                    abstract class MyShinyKtScript
+                    abstract class GitlabCiKtScript
                 """.trimIndent()
             }
         }
@@ -776,17 +793,61 @@ slides {
             +exampleTitle
             +kotlinCode {
                 """
-                    object MyShinyScriptEvaluationConfiguration : ScriptEvaluationConfiguration({
+                    object GitlabCiKtEvaluationConfiguration : ScriptEvaluationConfiguration({
                         scriptsInstancesSharing(false)
                         constructorArgs("My Arg String")
                     })
                     
                     @KotlinScript(
-                        fileExtension = "shiny.kts",
-                        compilationConfiguration = MyShinyScriptCompilationConfiguration::class,
-                        evaluationConfiguration = MyShinyScriptEvaluationConfiguration::class,
+                        fileExtension = "gitlab-ci.kts",
+                        displayName = "Gitlab CI Kotlin configuration",
+                        compilationConfiguration = GitlabCiKtScriptCompilationConfiguration::class,
+                        evaluationConfiguration = GitlabCiKtEvaluationConfiguration::class,
                     )
-                    abstract class MyShinyKtScript(val arg: String)
+                    abstract class GitlabCiKtScript(val arg: String)
+                """.trimIndent()
+            }
+        }
+    }
+
+    val hostTitle = smallTitle { "Конфигурация хоста" }
+    verticalSlide {
+        slide {
+            +hostTitle
+        }
+        slide {
+            +hostTitle
+            +exampleTitle
+            +kotlinCode {
+                """
+                    object GitlabCiKtHostConfiguration : ScriptingHostConfiguration({
+                        jvm {
+                            val cacheBaseDir = findCacheBaseDir()
+                            if (cacheBaseDir != null)
+                                compilationCache(
+                                    CompiledScriptJarsCache { script, scriptCompilationConfiguration ->
+                                        cacheBaseDir
+                                            .resolve(compiledScriptUniqueName(script, scriptCompilationConfiguration) + ".jar")
+                                    }
+                                )
+                        }
+                    })
+                """.trimIndent()
+            }
+        }
+        slide {
+            +hostTitle
+            +exampleTitle
+            +kotlinCode {
+                """
+                    @KotlinScript(
+                        displayName = "Gitlab CI Kotlin configuration",
+                        fileExtension = "gitlab-ci.kts",
+                        compilationConfiguration = GitlabCiKtScriptCompilationConfiguration::class,
+                        evaluationConfiguration = GitlabCiKtEvaluationConfiguration::class,
+                        hostConfiguration = GitlabCiKtHostConfiguration::class,
+                    )
+                    abstract class GitlabCiKtScript
                 """.trimIndent()
             }
         }
@@ -809,9 +870,9 @@ slides {
                         scriptFile: File
                     ): ResultWithDiagnostics<EvaluationResult> {
                         val compilationConfiguration = 
-                            createJvmCompilationConfigurationFromTemplate<MyShinyScript> {}
+                            createJvmCompilationConfigurationFromTemplate<GitlabCiKtScript> {}
                         val evaluationConfiguration = 
-                            createJvmEvaluationConfigurationFromTemplate<MyShinyScript> {}
+                            createJvmEvaluationConfigurationFromTemplate<GitlabCiKtScript> {}
                         return eval(
                             script = scriptFile.toScriptSource(),
                             compilationConfiguration = compilationConfiguration,

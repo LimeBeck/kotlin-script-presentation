@@ -1,6 +1,7 @@
 direction: right
 vars: {
   d2-config: {
+    pad: 0
     theme-id: 200
     layout-engine: elk
     theme-overrides: {
@@ -12,22 +13,12 @@ vars: {
 }
 
 **.style.font-size: 35
-
-bytecode: JVM Classes {
-  near: bottom-center
-}
+(** <- scriptDef.*)[*].style.stroke-width: 4
 
 host: Scripting Host (app) {
   grid-columns: 2
   compiler: Compiler
   evaluator: Evaluator
-}
-
-host.compiler -> bytecode: {
-  style.animated: true
-}
-bytecode -> host.evaluator: {
-  style.animated: true
 }
 
 scriptDef: Script Definition {
@@ -40,3 +31,5 @@ scriptDef: Script Definition {
 host.compiler <- scriptDef.compilation
 host.evaluator <- scriptDef.evaluation
 host <- scriptDef.host
+
+(scriptDef.* -> **)[*].style.stroke-width: 40

@@ -1,0 +1,53 @@
+package dev.limebeck.ci.gitlab.scripts
+
+import dev.limebeck.ci.gitlab.scripts.tools.Directories
+import java.io.File
+import java.nio.ByteBuffer
+import java.security.MessageDigest
+import kotlin.script.experimental.api.ScriptCompilationConfiguration
+import kotlin.script.experimental.api.SourceCode
+
+
+const val COMPILED_SCRIPTS_CACHE_DIR_ENV_VAR = "KOTLIN_MAIN_KTS_COMPILED_SCRIPTS_CACHE_DIR"
+const val COMPILED_SCRIPTS_CACHE_DIR_PROPERTY = "kotlin.main.kts.compiled.scripts.cache.dir"
+const val COMPILED_SCRIPTS_CACHE_VERSION = 1
+
+internal fun findCacheBaseDir(): File? {
+    val cacheExtSetting = System.getProperty(COMPILED_SCRIPTS_CACHE_DIR_PROPERTY)
+        ?: System.getenv(COMPILED_SCRIPTS_CACHE_DIR_ENV_VAR)
+    return when {
+        cacheExtSetting == null -> Directories(System.getProperties(), System.getenv()).cache
+            ?.takeIf { it.exists() && it.isDirectory }
+            ?.let { File(it, "main.kts.compiled.cache").apply { mkdir() } }
+
+        cacheExtSetting.isBlank() -> null
+        else -> File(cacheExtSetting)
+    }?.takeIf { it.exists() && it.isDirectory }
+}
+
+internal fun compiledScriptUniqueName(
+    script: SourceCode,
+    scriptCompilationConfiguration: ScriptCompilationConfiguration
+): String {
+    val digestWrapper = MessageDigest.getInstance("SHA-256")
+
+    fun addToDigest(chunk: String) = with(digestWrapper) {
+        val chunkBytes = chunk.toByteArray()
+        update(chunkBytes.size.toByteArray())
+        update(chunkBytes)
+    }
+
+    digestWrapper.update(COMPILED_SCRIPTS_CACHE_VERSION.toByteArray())
+    addToDigest(script.text)
+    scriptCompilationConfiguration.notTransientData.entries
+        .sortedBy { it.key.name }
+        .forEach {
+            addToDigest(it.key.name)
+            addToDigest(it.value.toString())
+        }
+    return digestWrapper.digest().toHexString()
+}
+
+private fun ByteArray.toHexString(): String = joinToString("", transform = { "%02x".format(it) })
+
+private fun Int.toByteArray() = ByteBuffer.allocate(Int.SIZE_BYTES).also { it.putInt(this) }.array()

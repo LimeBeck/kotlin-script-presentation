@@ -1,6 +1,7 @@
 direction: right
 vars: {
   d2-config: {
+    pad: 0
     theme-id: 200
     layout-engine: elk
     theme-overrides: {
@@ -12,6 +13,7 @@ vars: {
 }
 
 **.style.font-size: 35
+(** -> **)[*].style.stroke-width: 4
 
 bytecode: JVM Classes {
   near: bottom-center
@@ -40,21 +42,25 @@ bytecode -> host.evaluator: {
 
 output: Result {
   near: center-right
-#   grid-columns: 1
-#   stdout
-#   "Runtime Objects"
+  #   grid-columns: 1
+  #   stdout
+  #   "Runtime Objects"
 }
 host.evaluator -> output: {
   style.animated: true
 }
 
-# scriptDef: Script Definition {
-#   near: top-center
-#   compilation: Compilation configuration
-#   host: Host configuration
-#   evaluation: Evaluation configuration
-# }
-#
-# host.compiler <- scriptDef.compilation
-# host.evaluator <- scriptDef.evaluation
-# host <- scriptDef.host
+scriptDef: Script Definition {
+  near: top-center
+  #   compilation: Compilation configuration
+  #   host: Host configuration
+  #   evaluation: Evaluation configuration
+}
+
+host.compiler <- scriptDef
+host.evaluator <- scriptDef
+host <- scriptDef
+script <- scriptDef
+output <- scriptDef
+
+(* -> *)[*].style.stroke-width: 10

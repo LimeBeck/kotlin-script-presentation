@@ -1,40 +1,40 @@
-#name: Build and Deploy
-#on:
-#  # Triggers the workflow on push or pull request events but only for the master branch
-#  push:
-#    branches: [ master ]
-#jobs:
-#  jbang:
-#    runs-on: ubuntu-latest
-#    name: A job to run jbang
-#    permissions:
-#      pages: write      # to deploy to Pages
-#      id-token: write   # to verify the deployment originates from an appropriate source
-#
-#    environment:
-#      name: github-pages
-#      url: ${{ steps.deployment.outputs.page_url }}
-#    steps:
-#    - name: checkout
-#      uses: actions/checkout@v1
-#    - uses: actions/cache@v1
-#      with:
-#        path: /root/.jbang
-#        key: $-jbang-$
-#        restore-keys: |
-#            $-jbang-
-#    - name: jbang
-#      uses: jbangdev/jbang-action@v0.114.0
-#      with:
-#        script: revealkt@limebeck.dev
-#        scriptargs: render ./presentation/GradlePresentation.reveal.kts
-#    - name: Setup Pages
-#      uses: actions/configure-pages@v2
-#    - name: Upload artifact
-#      uses: actions/upload-pages-artifact@v1
-#      with:
-#        # Upload build dir
-#        path: './out'
-#    - name: Deploy to GitHub Pages
-#      id: deployment
-#      uses: actions/deploy-pages@v1
+name: Build and Deploy
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+jobs:
+  jbang:
+    runs-on: ubuntu-latest
+    name: A job to run jbang
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v1
+    - uses: actions/cache@v1
+      with:
+        path: /root/.jbang
+        key: $-jbang-$
+        restore-keys: |
+            $-jbang-
+    - name: jbang
+      uses: jbangdev/jbang-action@v0.114.0
+      with:
+        script: revealkt@limebeck.dev
+        scriptargs: render ./presentation/GradlePresentation.reveal.kts
+    - name: Setup Pages
+      uses: actions/configure-pages@v2
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        # Upload build dir
+        path: './out'
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v1

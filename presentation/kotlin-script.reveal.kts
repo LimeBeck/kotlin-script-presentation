@@ -34,13 +34,6 @@ configuration {
 
 slides {
     verticalSlide {
-        slide {
-            +title { "Kotlin Script" }
-            +title { "для кого, зачем и как" }
-        }
-    }
-
-    verticalSlide {
         regularSlide {
             +mediumTitle { "Кто я такой?" }
             +row {
@@ -62,8 +55,12 @@ slides {
                 }
             }
         }
+    }
+
+    verticalSlide {
         slide {
-            +title { "Тут вступление и т.д." }
+            +title { "Kotlin Script" }
+            +title { "для кого, зачем и как" }
         }
     }
 
@@ -158,10 +155,26 @@ slides {
         slide {
             +smallTitle { "Обобщим" }
             +unorderedListOf(
-                "замена BASH-скриптов",
-                "Read-Eval-Print Loop (REPL)",
-                "компиляция скриптов с исходниками",
-                "встраивание скриптового движка",
+                regular { "Read-Eval-Print Loop (REPL)" },
+                regular { "замена BASH-скриптов" },
+                regular { "встраивание скриптового движка" },
+                regular { "компиляция скриптов с исходниками" },
+                fragmented = false
+            )
+            +note {
+                """
+                    Называть причину по каждому пункту
+                    К REPL можно отнести и Jupyter Kotlin
+                """.trimIndent()
+            }
+        }
+        slide {
+            +smallTitle { "Обобщим" }
+            +unorderedListOf(
+                regular { "Read-Eval-Print Loop (REPL)" },
+                regular { "замена BASH-скриптов" },
+                regular { "встраивание скриптового движка" },
+                strike { "компиляция скриптов с исходниками" },
                 fragmented = false
             )
             +note {
@@ -254,6 +267,24 @@ slides {
         }
         slide {
             +replTitle
+            +smallTitle { "KScript (REPL mode)" }
+            +kotlinCode {
+                """
+                    > kscript --interactive kscript.kts
+                    [kscript] Resolving com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0...
+                    [kscript] Creating REPL
+                    Welcome to Kotlin version 1.9.22 (JRE 22+37)
+                    Type :help for help, :quit for quit
+                    >>> println("Hello, World!")
+                    Hello, World!
+                    >>> 
+                """.trimIndent()
+            }
+        }
+        slide {
+            +smallTitle { "Kotlin REPL" }
+        }
+        slide {
             +smallTitle { "Kotlin SHELL" }
             +kotlinCode {
                 """
@@ -311,8 +342,8 @@ slides {
     }
 
     //BASH
+    val autoTitle = smallTitle { "Замена BASH-скриптов в автоматизации задач" }
     verticalSlide {
-        val autoTitle = smallTitle { "Замена BASH-скриптов в автоматизации задач" }
         slide {
             +autoTitle
         }
@@ -372,14 +403,122 @@ slides {
 
         slide {
             +smallTitle { "Альтернативы" }
-            +unorderedListOf(
-                "Java 22",
-                "Groovy",
-                "JBang (Java, Kotlin, Groovy)",
-                "KScript",
-            )
         }
 
+        slide {
+            +smallTitle { "Java 11 (JEP 330)" }
+            +code(lang = "java") {
+                loadAsset("examples/java/11/Prog.java").decodeToString()
+            }
+            +code(lang = "bash") {
+                """
+                    > ./Prog.java
+                    Hello!
+                """.trimIndent()
+            }
+        }
+
+        slide {
+            +smallTitle { "Java 22 (JEP 458)" }
+            +code(lang = "java") {
+                loadAsset("examples/java/22/Prog.java").decodeToString()
+            }
+            +code(lang = "java") {
+                loadAsset("examples/java/22/Helper.java").decodeToString()
+            }
+            +code(lang = "bash") {
+                """
+                    > ./Prog.java
+                    Hello!
+                """.trimIndent()
+            }
+        }
+        slide {
+            +smallTitle { "Groovy" }
+            +code(lang = "groovy") {
+                loadAsset("examples/ScriptWithDeps.groovy").decodeToString()
+            }
+            +code(lang = "bash") {
+                """
+                    > ./ScriptWithDeps.groovy
+                    Hello, World!
+                """.trimIndent()
+            }
+        }
+
+        slide {
+            +smallTitle { "JBang (java)" }
+            +code(lang = "java") {
+                loadAsset("examples/jbang/JBangEx.java").decodeToString()
+            }
+            +code(lang = "bash") {
+                """
+                    > ./JBangEx.java
+                    [jbang] Resolving dependencies...
+                    [jbang]    com.fasterxml.jackson.core:jackson-databind:2.17.0
+                    [jbang] Dependencies resolved
+                    [jbang] Building jar for JBangEx.java...
+                    Hello, World!
+                """.trimIndent()
+            }
+        }
+        slide {
+            +smallTitle { "JBang (Groovy)" }
+            +code(lang = "groovy") {
+                loadAsset("examples/jbang/JBangEx.groovy").decodeToString()
+            }
+            +code(lang = "bash") {
+                """
+                    > ./JBangEx.groovy 
+                    [jbang] Downloading Groovy 4.0.14. Be patient, this can take several minutes...
+                    [jbang] Installing Groovy 4.0.14...
+                    [jbang] Resolving dependencies...
+                    [jbang]    com.fasterxml.jackson.core:jackson-databind:2.17.0
+                    [jbang]    org.apache.groovy:groovy:4.0.14
+                    [jbang] Dependencies resolved
+                    [jbang] Building jar for JBangEx.groovy...
+                    Hello, World!
+                """.trimIndent()
+            }
+        }
+        slide {
+            +smallTitle { "JBang (Kotlin)" }
+            +code(lang = "kotlin") {
+                loadAsset("examples/jbang/JBangEx.kt").decodeToString()
+            }
+            +code(lang = "bash") {
+                """
+                    > ./JBangEx.kt 
+                    [jbang] Downloading Kotlin 1.8.22. Be patient, this can take several minutes...
+                    [jbang] Installing Kotlin 1.8.22...
+                    [jbang] Resolving dependencies...
+                    [jbang]    com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0
+                    [jbang] Dependencies resolved
+                    [jbang] Building jar for JBangEx.kt...
+                    Hello, World! 
+                """.trimIndent()
+            }
+        }
+
+        slide {
+            +smallTitle { "KScript" }
+            +code(lang = "kotlin") {
+                loadAsset("examples/kscript.kts").decodeToString()
+            }
+            +code(lang = "bash") {
+                """
+                    > ./kscript.kts 
+                    [kscript] Resolving com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0...
+                    Hello, World!
+                """.trimIndent()
+            }
+        }
+    }
+
+    verticalSlide {
+        slide {
+            +smallTitle { "Kotlin Script вместо BASH" }
+        }
         slide {
             +autoTitle
             +smallTitle { "Скрипты .kts" }
@@ -413,7 +552,7 @@ slides {
                 "Подключение репозиториев и библиотек",
                 "Конфигурация комплятора в самом скрипте",
                 "Кэширование между запусками",
-                "Удобная работа \"из коробки\"",
+                "Поддержка в IDE \"из коробки\"",
             )
         }
         slide {
@@ -466,14 +605,14 @@ slides {
         slide {
             +smallTitle { "микроядерная архитектура" }
             +smallTitle { "(плагинная архитектура)" }
-            +img("./plugin-arch.png") {
+            +img("./microkernel-arch.svg") {
                 stretch = true
             }
         }
 
         slide {
             +smallTitle { "кастомизация действий пользователем" }
-            +img("./workflow-engine.png") {
+            +img("./workflow-engine.svg") {
                 stretch = true
             }
         }
@@ -501,28 +640,6 @@ slides {
             }
         }
     }
-
-    //JSR223
-//    verticalSlide {
-//        slide {
-//            +mediumTitle { "Java Scripting API" }
-//            +mediumTitle { "(JSR223)" }
-//        }
-//        slide {
-//            +mediumTitle { "Абстракция в JVM для исполнения скриптов" }
-//        }
-//        slide {
-//            +mediumTitle { "Kotlin Script > JSR223" }
-//        }
-//        slide {
-//            +mediumTitle { "Kotlin Script" }
-//            +unorderedListOf(
-//                "Компиляция",
-//                "Исполнение",
-//                "Работа с IDE"
-//            )
-//        }
-//    }
 
     verticalSlide {
         slide {
@@ -573,11 +690,6 @@ slides {
     }
 
     verticalSlide {
-        slide {
-            +smallTitle { "Описание скрипта" }
-            +smallTitle { "(Script Definition)" }
-        }
-
         slide {
             +smallTitle { "Script Definition" }
             +img("scripting-configuration.svg") {
@@ -639,6 +751,7 @@ slides {
                 "Конфигурация IDE",
                 "Параметры компилятора Kotlin",
                 "Определение неявных (implicit) ресиверов",
+                "Доступные в скрипте свойства"
             )
         }
 
@@ -763,7 +876,7 @@ slides {
             +unorderedListOf(
                 "Параметры запуска JVM",
                 "Подкидывание созданных экземпляров implicit ресиверов",
-                "Аргументы коструктора для базового класса скрипта (MyShinyKtScript)",
+                "Аргументы коструктора для базового класса скрипта",
                 "Возможность разделения инстансов скрипта",
                 "Просмотр истории запусков (для REPL)",
                 "Возможность переопределения любых частей скрипта"
@@ -772,7 +885,7 @@ slides {
         slide {
             +evaluationTitle
             +exampleTitle
-            +kotlinCode {
+            +kotlinCode(lines = "1-3,9") {
                 """
                     object GitlabCiKtEvaluationConfiguration : ScriptEvaluationConfiguration({
                         scriptsInstancesSharing(false)
@@ -791,7 +904,7 @@ slides {
         slide {
             +evaluationTitle
             +exampleTitle
-            +kotlinCode {
+            +kotlinCode(lines = "3,12") {
                 """
                     object GitlabCiKtEvaluationConfiguration : ScriptEvaluationConfiguration({
                         scriptsInstancesSharing(false)
@@ -827,7 +940,12 @@ slides {
                                 compilationCache(
                                     CompiledScriptJarsCache { script, scriptCompilationConfiguration ->
                                         cacheBaseDir
-                                            .resolve(compiledScriptUniqueName(script, scriptCompilationConfiguration) + ".jar")
+                                            .resolve(
+                                                compiledScriptUniqueName(
+                                                    script, 
+                                                    scriptCompilationConfiguration
+                                                ) + ".jar"
+                                            )
                                     }
                                 )
                         }
@@ -838,7 +956,7 @@ slides {
         slide {
             +hostTitle
             +exampleTitle
-            +kotlinCode {
+            +kotlinCode(lines = "6") {
                 """
                     @KotlinScript(
                         displayName = "Gitlab CI Kotlin configuration",
@@ -898,15 +1016,15 @@ slides {
         }
         slide {
             +ideTitle
-            +regular("META-INF/kotlin/script/templates/\ndev.limebeck.scripts.MyShinyScript.classname")
+            +regular("META-INF/kotlin/script/templates/\ndev.limebeck.ci.gitlab.scripts.GitlabCiKtScript.classname")
         }
-        slide { //TODO: Заменить скрин на MyShinyScript
+        slide {
             +ideTitle
             +img("IDE_scriptDefPath.png") {
                 stretch = true
             }
         }
-        slide { //TODO Заменить скрин на MyShinyScript
+        slide {
             +ideTitle
             +img("IDE.png") {
                 stretch = true
@@ -914,7 +1032,39 @@ slides {
         }
         slide {
             +ideTitle
-            +smallTitle { "Работает только в Intellij IDEA" }
+            +img("IDE_closeup.png") {
+                stretch = true
+            }
+        }
+        slide {
+            +ideTitle
+            +unorderedListOf(
+                "Работает только в IntelliJ IDEA / Fleet",
+                "Нужен проект Gradle/Maven для работы",
+                fragmented = false
+            )
+        }
+    }
+
+    //JSR223
+    verticalSlide {
+        slide {
+            +smallTitle { "Java Scripting API" }
+            +smallTitle { "(JSR223)" }
+        }
+        slide {
+            +smallTitle { "Абстракция в JVM для исполнения скриптов" }
+        }
+//        slide {
+//            +smallTitle { "Kotlin Script > JSR223" }
+//            +unorderedListOf(
+//                "Интеграция с IDE",
+//                fragmented = false
+//            )
+//        }
+        slide {
+            +smallTitle { "Kotlin Script + JSR223" }
+            +regular { "Обертка поверх BasicJvmScriptingHost" }
         }
     }
 
@@ -929,36 +1079,44 @@ slides {
                 "Ограничение по модулям JVM",
                 "Ограничение по доступным классам"
             )
-            //Безопасности нет - раскрыть
         }
     }
 
     verticalSlide {
-        val minusesTitle = smallTitle { "Минусы" }
         slide {
-            +minusesTitle
-        }
-        slide {
-            +minusesTitle
+            +smallTitle { "Минусы встраивания" }
             +unorderedListOf(
                 "Компилятор Kotlin в приложении",
-                "Слабая поддержка в IDE",
+                "Поддержка IDE - Jetbrains only",
                 "Мало документации",
                 "Только на JVM",
                 "Долгий старт",
-                "Общая сырость, баги",
-                "Проблемы с применением плагинов компилятора"
             )
-            +note {
-                """
-                    Привести примеры - не работает подсветка c @import
-                    Проблемы с необходимостью проекта gradle для подсветки
-                """.trimIndent()
-            }
+        }
+        slide {
+            +smallTitle { "Плюсы встраивания" }
+            +unorderedListOf(
+                "Нативно для Kotlin",
+                "Расширяемость",
+                "Поддержка собственных DSL",
+                "Нет альтернатив"
+            )
         }
     }
 
-    //Выводы
+//    slide {
+//        +smallTitle { "Компиляция скриптов с исходниками" }
+//    }
+
+    slide {
+        +smallTitle { "Итого по Kotlin Script" }
+        +unorderedListOf(
+            "Зрелое решение (>6 лет)",
+            "Развивается",
+            "Лучше всего - со своим DSL",
+            "Упрощает поддержку скриптов",
+        )
+    }
 
     slide {
         +title { "Ссылка на презентацию и полезные штуки" }

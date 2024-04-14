@@ -16,6 +16,7 @@
 
 * [KEEP: Kotlin Scripting support](https://github.com/Kotlin/KEEP/blob/master/proposals/scripting-support.md#embedded-scripting)
 * [Обсуждение KEEP на GitHub](https://github.com/Kotlin/KEEP/issues/75)
+* [KotlinConf 2019: Implementing the Gradle Kotlin DSL by Rodrigo Oliveira](https://www.youtube.com/watch?v=OEFwnWxoazI) - доклад от авторов Gradle
 * [Roadmap развития Kotlin](https://kotlinlang.org/docs/roadmap.html)
 * [Официальные примеры встраивания Kotlin Script](https://github.com/Kotlin/kotlin-script-examples)
 * [The Java Scripting API](https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/prog_guide/api.html)

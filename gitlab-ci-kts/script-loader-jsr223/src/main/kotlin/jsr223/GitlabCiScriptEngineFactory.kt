@@ -18,13 +18,25 @@ import kotlin.script.experimental.jvmhost.createJvmScriptDefinitionFromTemplate
 import kotlin.script.experimental.jvmhost.jsr223.KotlinJsr223ScriptEngineImpl
 
 class GitlabCiScriptEngineFactory : KotlinJsr223JvmScriptEngineFactoryBase() {
-
     private val scriptDefinition = createJvmScriptDefinitionFromTemplate<GitlabCiKtScript>()
     private var lastClassLoader: ClassLoader? = null
     private var lastClassPath: List<File>? = null
 
     override fun getExtensions(): List<String> =
         listOf(scriptDefinition.compilationConfiguration[ScriptCompilationConfiguration.fileExtension]!!)
+
+    override fun getScriptEngine(): ScriptEngine =
+        KotlinJsr223ScriptEngineImpl(
+            this,
+            scriptDefinition.compilationConfiguration.with {
+                jvm {
+                    dependenciesFromCurrentContext()
+                }
+            },
+            scriptDefinition.evaluationConfiguration.with {
+                implicitReceivers(PipelineBuilder())
+            }
+        ) { ScriptArgsWithTypes(arrayOf(), arrayOf()) }
 
     @Synchronized
     private fun JvmScriptCompilationConfigurationBuilder.dependenciesFromCurrentContext() {
@@ -41,13 +53,4 @@ class GitlabCiScriptEngineFactory : KotlinJsr223JvmScriptEngineFactoryBase() {
         } else lastClassPath!!
         updateClasspath(classPath)
     }
-
-    override fun getScriptEngine(): ScriptEngine =
-        KotlinJsr223ScriptEngineImpl(
-            this,
-            scriptDefinition.compilationConfiguration.with { },
-            scriptDefinition.evaluationConfiguration.with {
-                implicitReceivers(PipelineBuilder())
-            }
-        ) { ScriptArgsWithTypes(arrayOf(), arrayOf()) }
 }

@@ -1,0 +1,35 @@
+direction: right
+vars: {
+  d2-config: {
+    pad: 0
+    theme-id: 200
+    layout-engine: elk
+    theme-overrides: {
+      N1: "#ffffff"
+      N7: "#191919"
+      B1: "#ffffff"
+    }
+  }
+}
+
+**.style.font-size: 35
+(** <- scriptDef.*)[*].style.stroke-width: 4
+*.style.border-radius: 8
+
+start: Start
+find: Find user
+bday: If \nB-Day \ntoday {
+  shape: diamond
+}
+push: Make push {
+  near: top-right
+}
+pass: Pass {
+  near: bottom-right
+}
+
+start -> find
+find -> bday
+
+bday -> push: true
+bday -> pass: false

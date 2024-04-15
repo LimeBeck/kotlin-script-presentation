@@ -1,43 +1,33 @@
 stages:
-  - build-dev-0
-  - deploy-dev-0
-  - build-dev-1
-  - deploy-dev-1
-  - build-dev-2
-  - deploy-dev-2
-build-dev-0:
-  stage: build-dev-0
+  - build
+  - deploy
+build:
+  stage: build
   image:
     name: alpine:latest
   script:
-    - echo 'Hello World from dev-0'
+    - echo 'Hello World from build'
 deploy-dev-0:
-  stage: deploy-dev-0
+  stage: deploy
   image:
     name: alpine:latest
+  needs:
+    - build
   script:
     - echo Deployed dev-0
-build-dev-1:
-  stage: build-dev-1
-  image:
-    name: alpine:latest
-  script:
-    - echo 'Hello World from dev-1'
 deploy-dev-1:
-  stage: deploy-dev-1
+  stage: deploy
   image:
     name: alpine:latest
+  needs:
+    - build
   script:
     - echo Deployed dev-1
-build-dev-2:
-  stage: build-dev-2
-  image:
-    name: alpine:latest
-  script:
-    - echo 'Hello World from dev-2'
 deploy-dev-2:
-  stage: deploy-dev-2
+  stage: deploy
   image:
     name: alpine:latest
+  needs:
+    - build
   script:
     - echo Deployed dev-2

@@ -52,19 +52,11 @@ slides {
                             "Техлид JVM Backend в Банке Центр-инвест",
                             "Пишу на Kotlin больше 5 лет",
                             "Фанат Kotlin",
-                            "Написал эту презентацию на Kotlin"
                         ),
                         fragmented = false
                     )
                 }
             }
-        }
-    }
-
-    verticalSlide {
-        slide {
-            +title { "Kotlin Script" }
-            +title { "для кого, зачем и как" }
         }
     }
 
@@ -77,13 +69,6 @@ slides {
             +smallTitle { "build.gradle.kts" }
             +kotlinCode {
                 loadAsset("examples/build.gradle.kts").decodeToString()
-            }
-        }
-
-        slide {
-            +smallTitle { "Простое CLI приложение" }
-            +kotlinCode {
-                loadAsset("test.main.kts").decodeToString()
             }
         }
 
@@ -105,6 +90,13 @@ slides {
             +smallTitle { "Github Workflows Kt" }
             +kotlinCode {
                 loadAsset("examples/github.main.kts").decodeToString()
+            }
+        }
+
+        slide {
+            +smallTitle { "Простое CLI приложение" }
+            +kotlinCode {
+                loadAsset("test.main.kts").decodeToString()
             }
         }
 
@@ -437,7 +429,7 @@ slides {
             +smallTitle { "Shebang для .java" }
             +code(lang = "bash") {
                 """
-                    ///usr/bin/env java "${'$'}0" "${'$'}@" ; exit ${'$'}?
+                    ///usr/bin/env java "$`$`0" "$`$`@" ; exit $`$`?
                 """.trimIndent()
             }
         }
@@ -691,12 +683,15 @@ slides {
             +smallTitle { "Gitlab-CI.kts" }
             +kotlinCode {
                 """
+                    val build = job("build") {
+                        stage = Stage("build")
+                        image = Image.of("alpine:latest")
+                        script("echo 'Hello World from build'")
+                    }
                     listOf("dev-0", "dev-1", "dev-2").forEach {
-                        job("build-$`$`it") {
-                            image = Image.of("alpine:latest")
-                            script("echo 'Hello World from $`$`it'")
-                        }
                         job("deploy-$`$`it") {
+                            stage = Stage("deploy")
+                            needs(build)
                             image = Image.of("alpine:latest")
                             script("echo Deployed $`$`it")
                         }
@@ -705,7 +700,47 @@ slides {
             }
             +code(lang = "bash") {
                 """
-                    > java -jar gitlab-cli.jar ./main.gitlab-ci.kts > .gitlab.ci.yaml
+                    > java -jar gitlab-cli.jar ./main.gitlab-ci.kts > .gitlab-ci.yaml
+                """.trimIndent()
+            }
+        }
+        slide {
+            +regular { ".gitlab-ci.yaml" }
+            +code(lang = "yaml", lines = "|1-3|4-9|10-17|18-25|26-33") {
+                """
+                    stages:
+                      - build
+                      - deploy
+                    build:
+                      stage: build
+                      image:
+                        name: alpine:latest
+                      script:
+                        - echo 'Hello World from build'
+                    deploy-dev-0:
+                      stage: deploy
+                      image:
+                        name: alpine:latest
+                      needs:
+                        - build
+                      script:
+                        - echo Deployed dev-0
+                    deploy-dev-1:
+                      stage: deploy
+                      image:
+                        name: alpine:latest
+                      needs:
+                        - build
+                      script:
+                        - echo Deployed dev-1
+                    deploy-dev-2:
+                      stage: deploy
+                      image:
+                        name: alpine:latest
+                      needs:
+                        - build
+                      script:
+                        - echo Deployed dev-2
                 """.trimIndent()
             }
         }
@@ -792,8 +827,8 @@ slides {
                 "Импорты по умолчанию",
                 "Конфигурация IDE",
                 "Параметры компилятора Kotlin",
+                "Доступные в скрипте свойства",
                 "Определение неявных (implicit) ресиверов",
-                "Доступные в скрипте свойства"
             )
         }
 
@@ -801,21 +836,22 @@ slides {
             +compilationTitle
             +exampleTitle
             +kotlinCode(
-                lines = "|2-4|5-10|11|12"
+                lines = "|2-4|5-9|10|11|12|13"
             ) {
                 """
                     object GitlabCiKtScriptCompilationConfiguration : ScriptCompilationConfiguration({
                         jvm { 
                             dependenciesFromClassContext(PipelineBuilder::class, wholeClasspath = true) 
                         }
-                        defaultImports(DependsOn::class, Repository::class)
                         defaultImports(
                             "dev.otbe.gitlab.ci.core.model.*",
                             "dev.otbe.gitlab.ci.dsl.*",
                             "dev.otbe.gitlab.ci.core.goesTo"
                         )
-                        implicitReceivers(PipelineBuilder::class)
                         ide { acceptedLocations(ScriptAcceptedLocation.Everywhere) }
+                        compilerOptions.append("-Xcontext-receivers")
+                        providedProperties("propName" to String::class)
+                        implicitReceivers(PipelineBuilder::class)
                     })
                 """.trimIndent()
             }
@@ -827,9 +863,9 @@ slides {
             +kotlinCode {
                 """
                     class PipelineBuilder {
-                        private var stages: List<Stage> = emptyList()
-                        fun stages(vararg stage: Stage) {
-                            stages = stage.asList()
+                        var stages: List<Stage> = mutableListOf()
+                        fun stages(vararg stage: String) {
+                            stages += stage.asList().map { Stage(it) }
                         }
                     }
                 """.trimIndent()
@@ -860,9 +896,10 @@ slides {
         slide {
             +compilationTitle
             +externalDeps
-            +kotlinCode(lines = "2-9") {
+            +kotlinCode(lines = "2-10") {
                 """
                     object GitlabCiKtScriptCompilationConfiguration : ScriptCompilationConfiguration({
+                        defaultImports(DependsOn::class, Repository::class)
                         refineConfiguration {
                             onAnnotations(
                                 DependsOn::class,
@@ -875,14 +912,15 @@ slides {
                         jvm { 
                             dependenciesFromClassContext(PipelineBuilder::class, wholeClasspath = true) 
                         }
-                        defaultImports(DependsOn::class, Repository::class)
                         defaultImports(
                             "dev.otbe.gitlab.ci.core.model.*",
                             "dev.otbe.gitlab.ci.dsl.*",
                             "dev.otbe.gitlab.ci.core.goesTo"
                         )
-                        implicitReceivers(PipelineBuilder::class)
                         ide { acceptedLocations(ScriptAcceptedLocation.Everywhere) }
+                        compilerOptions.append("-Xcontext-receivers")
+                        providedProperties("propName" to String::class)
+                        implicitReceivers(PipelineBuilder::class)
                     }
                 """.trimIndent()
             }
@@ -1020,10 +1058,6 @@ slides {
         }
         slide {
             +loaderTitle
-            +smallTitle { "\"Evaluate and run\"" }
-        }
-        slide {
-            +loaderTitle
             +kotlinCode {
                 """
                     fun BasicJvmScriptingHost.evalFile(
@@ -1097,13 +1131,6 @@ slides {
         slide {
             +smallTitle { "Абстракция в JVM для исполнения скриптов" }
         }
-//        slide {
-//            +smallTitle { "Kotlin Script > JSR223" }
-//            +unorderedListOf(
-//                "Интеграция с IDE",
-//                fragmented = false
-//            )
-//        }
         slide {
             +smallTitle { "Kotlin Script + JSR223" }
             +regular { "Обертка поверх BasicJvmScriptingHost" }
@@ -1145,10 +1172,6 @@ slides {
             )
         }
     }
-
-//    slide {
-//        +smallTitle { "Компиляция скриптов с исходниками" }
-//    }
 
     slide {
         +smallTitle { "Итого по Kotlin Script" }

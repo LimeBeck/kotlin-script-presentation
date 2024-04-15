@@ -34,8 +34,12 @@ configuration {
 
 slides {
     verticalSlide {
+        slide {
+            +title { "Kotlin Script" }
+            +title { "для кого, зачем и как" }
+        }
         regularSlide {
-            +mediumTitle { "Кто я такой?" }
+            +smallTitle { "Обо мне" }
             +row {
                 column {
                     +img(src = "me.jpg") {
@@ -280,6 +284,12 @@ slides {
                     >>> 
                 """.trimIndent()
             }
+            +regular { "kscript.kts" }
+            +kotlinCode {
+                """
+                    @file:DependsOn("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
+                """.trimIndent()
+            }
         }
         slide {
             +smallTitle { "Kotlin REPL" }
@@ -298,7 +308,6 @@ slides {
             }
         }
         slide {
-            +replTitle
             +smallTitle { "IJ IDEA Kotlin REPL" }
             +img("REPL.png") {
                 stretch = true
@@ -419,6 +428,21 @@ slides {
         }
 
         slide {
+            +smallTitle { "Shebang обычный" }
+            +code(lang = "java") {
+                """
+                    #!/usr/bin/env java
+                """.trimIndent()
+            }
+            +smallTitle { "Shebang для .java" }
+            +code(lang = "bash") {
+                """
+                    ///usr/bin/env java "${'$'}0" "${'$'}@" ; exit ${'$'}?
+                """.trimIndent()
+            }
+        }
+
+        slide {
             +smallTitle { "Java 22 (JEP 458)" }
             +code(lang = "java") {
                 loadAsset("examples/java/22/Prog.java").decodeToString()
@@ -433,6 +457,23 @@ slides {
                 """.trimIndent()
             }
         }
+
+        slide {
+            +smallTitle { "Java 22 (+ JEP 463)" }
+            +code(lang = "java") {
+                loadAsset("examples/java/22/ProgMain.java").decodeToString()
+            }
+            +code(lang = "java") {
+                loadAsset("examples/java/22/Helper.java").decodeToString()
+            }
+            +code(lang = "bash") {
+                """
+                    > ./ProgMain.java
+                    Hello!
+                """.trimIndent()
+            }
+        }
+
         slide {
             +smallTitle { "Groovy" }
             +code(lang = "groovy") {
@@ -517,10 +558,10 @@ slides {
 
     verticalSlide {
         slide {
-            +smallTitle { "Kotlin Script вместо BASH" }
+            +autoTitle
+            +smallTitle { "Kotlin Script" }
         }
         slide {
-            +autoTitle
             +smallTitle { "Скрипты .kts" }
             +kotlinCode {
                 //language=kotlin
@@ -553,6 +594,7 @@ slides {
                 "Конфигурация комплятора в самом скрипте",
                 "Кэширование между запусками",
                 "Поддержка в IDE \"из коробки\"",
+                fragmented = false
             )
         }
         slide {
@@ -1084,7 +1126,7 @@ slides {
 
     verticalSlide {
         slide {
-            +smallTitle { "Минусы встраивания" }
+            +smallTitle { "Недостатки встраивания" }
             +unorderedListOf(
                 "Компилятор Kotlin в приложении",
                 "Поддержка IDE - Jetbrains only",
@@ -1094,7 +1136,7 @@ slides {
             )
         }
         slide {
-            +smallTitle { "Плюсы встраивания" }
+            +smallTitle { "Преимущества встраивания" }
             +unorderedListOf(
                 "Нативно для Kotlin",
                 "Расширяемость",

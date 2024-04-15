@@ -30,6 +30,7 @@
 * https://www.jetbrains.com/help/space/automation-faq.html
 * https://github.com/LimeBeck/reveal-kt
 * https://github.com/way-zer/ScriptAgent4MindustryExt/tree/7.5
+* https://hshell.hydraulic.dev/14.0/
 * https://github.com/dkandalov/live-plugin
 * https://github.com/typesafegithub/github-workflows-kt
 * https://github.com/kscripting/kscript

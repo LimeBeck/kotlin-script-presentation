@@ -5,8 +5,7 @@
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 
-val value = jacksonObjectMapper().readValue<Map<String, String>>(
-    """{"key":"Hello, World!"}"""
-)
+val value = jacksonObjectMapper()
+    .readValue<Map<String, String>>("""{"key":"Hello, World!"}""")
 
 println(value["key"])

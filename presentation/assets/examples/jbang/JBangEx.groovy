@@ -4,6 +4,6 @@
 import com.fasterxml.jackson.databind.ObjectMapper
 
 def value = new ObjectMapper().with {
-    readValue('{"key":"Hello, World!"}', Map.class)
+    readValue('{"key":"Hello, World!"}', Map.class)["key"]
 }
-println value["key"]
+println value

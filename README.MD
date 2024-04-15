@@ -2,7 +2,10 @@
 
 Доклад на JPoint.ru: [тыц](https://jpoint.ru/talks/4f1950e6c4144d0ea1ac306d0545217a/)
 
-Презентация написана с использованием [Reveal-Kt](https://github.com/LimeBeck/reveal-kt)
+Открыть презентацию в браузере можно по ссылке: https://kotlin-script.static.limebeck.dev/
+
+Презентация написана с использованием [Reveal-Kt](https://github.com/LimeBeck/reveal-kt) 
+- обертки в виде Kotlin DSL поверх [reveal.js](https://revealjs.com/)
 
 Для запуска локально необходимо установить [JBang](https://jbang.dev) и выполнить
 

@@ -45,7 +45,7 @@ internal fun compiledScriptUniqueName(
             addToDigest(it.key.name)
             addToDigest(it.value.toString())
         }
-    return digestWrapper.digest().toHexString()
+    return digestWrapper.digest().toHexString() + "jar"
 }
 
 private fun ByteArray.toHexString(): String = joinToString("", transform = { "%02x".format(it) })

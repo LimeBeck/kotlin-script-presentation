@@ -43,7 +43,7 @@ object GitlabCiKtHostConfiguration : ScriptingHostConfiguration({
             compilationCache(
                 CompiledScriptJarsCache { script, scriptCompilationConfiguration ->
                     cacheBaseDir
-                        .resolve(compiledScriptUniqueName(script, scriptCompilationConfiguration) + ".jar")
+                        .resolve(compiledScriptUniqueName(script, scriptCompilationConfiguration))
                 }
             )
     }

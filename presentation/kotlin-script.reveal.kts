@@ -8,24 +8,6 @@ import qrcode.color.Colors
 
 title = "Kotlin Script: для кого, зачем и как"
 
-fun kotlinCode(
-    id: ID = UuidGenerator.generateId(),
-    lines: String? = null,
-    block: () -> String
-) = Code(id = id, lang = "kotlin", lines = lines, codeProvider = block)
-
-fun qr(data: String) = qrCode(data) {
-    stretch = true
-    transformBuilder {
-        val logo = loadAsset("logo2.png")
-        it.withSize(20)
-            .withColor(Colors.css("#B125EA"))
-            .withLogo(logo, 150, 150, clearLogoArea = true)
-    }
-}
-
-val `$` = "$"
-
 configuration {
     theme = RevealKt.Configuration.Theme.Predefined.BLACK
     additionalCssStyle = loadAsset("additional.css").decodeToString()
@@ -73,14 +55,14 @@ slides {
         }
 
 //        slide {
-//            +smallTitle { "Jetbrains Teamcity CI/CD DSL" }
+//            +smallTitle { "JetBrains Teamcity CI/CD DSL" }
 //            +kotlinCode {
 //                loadAsset("examples/teamcity.settings.kts").decodeToString()
 //            }
 //        }
 
         slide {
-            +smallTitle { "Jetbrains Space CI/CD DSL" }
+            +smallTitle { "JetBrains Space CI/CD DSL" }
             +kotlinCode {
                 loadAsset("examples/example.space.kts").decodeToString()
             }
@@ -118,7 +100,7 @@ slides {
 
     verticalSlide {
         slide {
-            +smallTitle { "Позиционирование Kotlin Scripting От Jetbrains" }
+            +smallTitle { "Позиционирование Kotlin Scripting От JetBrains" }
         }
 
         slide {
@@ -144,7 +126,7 @@ slides {
                     Я так и не смог найти ни одного адекватного примера скриптов, которые
                     бы компилировались вместе с иходниками
                     
-                    Объяснить, что это прямая цитата из KEEP Jetbrains и что он не менялся 3 года
+                    Объяснить, что это прямая цитата из KEEP JetBrains и что он не менялся 3 года
                 """.trimIndent()
             }
         }
@@ -233,7 +215,8 @@ slides {
             }
             +note {
                 """
-                    +Встроен в jdk, -нет зависимостей
+                    +Встроен в jdk 
+                    -нет зависимостей
                 """.trimIndent()
             }
         }
@@ -258,6 +241,7 @@ slides {
                     +есть зависимости
                     +проще писать благодаря Groovy
                     -нужно тянуть Groovy
+                    -магия Groovy
                 """.trimIndent()
             }
         }
@@ -637,8 +621,7 @@ slides {
         }
 
         slide {
-            +smallTitle { "микроядерная архитектура" }
-            +smallTitle { "(плагинная архитектура)" }
+            +smallTitle { "плагинная архитектура" }
             +img("./microkernel-arch.svg") {
                 stretch = true
             }
@@ -706,7 +689,7 @@ slides {
         }
         slide {
             +regular { ".gitlab-ci.yaml" }
-            +code(lang = "yaml", lines = "|1-3|4-9|10-17|18-25|26-33") {
+            +code(lang = "yaml") {
                 """
                     stages:
                       - build
@@ -955,8 +938,8 @@ slides {
             +evaluationTitle
             +unorderedListOf(
                 "Параметры запуска JVM",
-                "Подкидывание созданных экземпляров implicit ресиверов",
-                "Аргументы коструктора для базового класса скрипта",
+                "Передача созданных экземпляров implicit ресиверов",
+                "Аргументы конструктора для базового класса скрипта",
                 "Возможность разделения инстансов скрипта",
                 "Просмотр истории запусков (для REPL)",
                 "Возможность переопределения любых частей скрипта"
@@ -1024,7 +1007,7 @@ slides {
                                                 compiledScriptUniqueName(
                                                     script, 
                                                     scriptCompilationConfiguration
-                                                ) + ".jar"
+                                                )
                                             )
                                     }
                                 )
@@ -1156,7 +1139,7 @@ slides {
             +smallTitle { "Недостатки встраивания" }
             +unorderedListOf(
                 "Компилятор Kotlin в приложении",
-                "Поддержка IDE - Jetbrains only",
+                "Поддержка IDE - JetBrains only",
                 "Мало документации",
                 "Только на JVM",
                 "Долгий старт",
@@ -1168,7 +1151,6 @@ slides {
                 "Нативно для Kotlin",
                 "Расширяемость",
                 "Поддержка собственных DSL",
-                "Нет альтернатив"
             )
         }
     }
@@ -1188,3 +1170,21 @@ slides {
         +qr("https://github.com/LimeBeck/kotlin-script-presentation")
     }
 }
+
+fun kotlinCode(
+    id: ID = UuidGenerator.generateId(),
+    lines: String? = null,
+    block: () -> String
+) = Code(id = id, lang = "kotlin", lines = lines, codeProvider = block)
+
+fun qr(data: String) = qrCode(data) {
+    stretch = true
+    transformBuilder {
+        val logo = loadAsset("logo2.png")
+        it.withSize(20)
+            .withColor(Colors.css("#B125EA"))
+            .withLogo(logo, 150, 150, clearLogoArea = true)
+    }
+}
+
+val `$` = "$"

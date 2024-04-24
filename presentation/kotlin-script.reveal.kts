@@ -14,6 +14,8 @@ configuration {
     controls = false
 }
 
+val `$` = "$"
+
 slides {
     verticalSlide {
         slide {
@@ -1151,8 +1153,21 @@ slides {
                 "Нативно для Kotlin",
                 "Расширяемость",
                 "Поддержка собственных DSL",
+                "Поддержка IDE",
             )
         }
+    }
+
+    slide {
+        +smallTitle { "Резюмируя" }
+    }
+    slide {
+        +smallTitle { "Резюмируя" }
+        +unorderedListOf(
+            "REPL - быстрая обратная связь",
+            "Замена BASH - разработчикам и DevOps",
+            "Встраивание - гибкая конфигурация",
+        )
     }
 
     slide {
@@ -1186,5 +1201,3 @@ fun qr(data: String) = qrCode(data) {
             .withLogo(logo, 150, 150, clearLogoArea = true)
     }
 }
-
-val `$` = "$"

@@ -15,6 +15,12 @@
 
 или же запустить `presentation/kotlin-script.reveal.kts` напрямую из IDE
 
+Управление в презентации:
+- `Space` - вперёд
+- `P` - назад
+- `O` - обзор структуры
+- стрелками - перемещение по структуре
+
 ## Полезные ссылки
 
 * [KEEP: Kotlin Scripting support](https://github.com/Kotlin/KEEP/blob/master/proposals/scripting-support.md#embedded-scripting)

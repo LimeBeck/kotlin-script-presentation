@@ -2,6 +2,8 @@
 
 Доклад на JPoint.ru: [тыц](https://jpoint.ru/talks/4f1950e6c4144d0ea1ac306d0545217a/)
 
+Я в Telegram: [@limebeck](https://t.me/limebeck)
+
 Открыть презентацию в браузере можно по ссылке: https://kotlin-script.static.limebeck.dev/
 
 Презентация написана с использованием [Reveal-Kt](https://github.com/LimeBeck/reveal-kt) 

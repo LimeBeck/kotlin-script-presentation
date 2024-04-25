@@ -950,10 +950,11 @@ slides {
         slide {
             +evaluationTitle
             +exampleTitle
-            +kotlinCode(lines = "1-3,9") {
+            +kotlinCode(lines = "1-4,10") {
                 """
                     object GitlabCiKtEvaluationConfiguration : ScriptEvaluationConfiguration({
                         scriptsInstancesSharing(false)
+                        implicitReceivers(PipelineBuilder())
                     })
                     
                     @KotlinScript(

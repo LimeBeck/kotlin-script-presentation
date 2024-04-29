@@ -304,7 +304,7 @@ slides {
 
     //JUPYTER
     verticalSlide {
-        val jupyterTitle = smallTitle { "Kotlin для Jupiter Notebook" }
+        val jupyterTitle = smallTitle { "Kotlin для Jupyter Notebook" }
         slide {
             +jupyterTitle
         }

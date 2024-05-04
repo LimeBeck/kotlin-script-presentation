@@ -1,10 +1,10 @@
-val revealKtVersion = "0.2.4"
+val revealKtVersion = "0.3.0"
 
 group = "dev.limebeck"
 version = "1.0.0"
 
 plugins {
-    kotlin("jvm") version "1.9.10"
+    kotlin("jvm") version "2.0.0-RC2"
 }
 
 repositories {

@@ -4,14 +4,25 @@ import dev.limebeck.revealkt.core.RevealKt
 import dev.limebeck.revealkt.utils.ID
 import dev.limebeck.revealkt.utils.UuidGenerator
 import kotlinx.html.br
+import kotlinx.html.script
+import kotlinx.html.unsafe
 import qrcode.color.Colors
 
 title = "Kotlin Script: для кого, зачем и как"
 
 configuration {
+    touch = true
+    slideNumber = RevealKt.Configuration.SlideNumber.Enable
+    showSlideNumber = RevealKt.Configuration.ShowSlideNumber.ALL
+    controlsLayout = RevealKt.Configuration.ControlsLayout.EDGES
     theme = RevealKt.Configuration.Theme.Predefined.BLACK
     additionalCssStyle = loadAsset("additional.css").decodeToString()
-    controls = false
+    controls = true
+    controlsTutorial = true
+}
+
+meta {
+    language = "ru"
 }
 
 val `$` = "$"
@@ -118,7 +129,7 @@ slides {
                 "Consoles like IPython/Jupyter Notebook",
                 "Game scripting engines",
                 "...",
-                fragmented = false
+                fragmented = true
             )
             +note {
                 """
@@ -1200,5 +1211,31 @@ fun qr(data: String) = qrCode(data) {
         it.withSize(20)
             .withColor(Colors.css("#B125EA"))
             .withLogo(logo, 150, 150, clearLogoArea = true)
+    }
+}
+
+head {
+    script {
+        unsafe {
+            raw("""
+                <!-- Yandex.Metrika counter -->
+                <script type="text/javascript" >
+                   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+                   m[i].l=1*new Date();
+                   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+                   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+                   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+                   ym(97198873, "init", {
+                        clickmap:true,
+                        trackLinks:true,
+                        accurateTrackBounce:true,
+                        trackHash: true
+                   });
+                </script>
+                <noscript><div><img src="https://mc.yandex.ru/watch/97198873" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+                <!-- /Yandex.Metrika counter -->
+            """.trimIndent())
+        }
     }
 }

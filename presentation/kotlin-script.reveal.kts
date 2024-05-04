@@ -3,9 +3,7 @@
 import dev.limebeck.revealkt.core.RevealKt
 import dev.limebeck.revealkt.utils.ID
 import dev.limebeck.revealkt.utils.UuidGenerator
-import kotlinx.html.br
-import kotlinx.html.script
-import kotlinx.html.unsafe
+import kotlinx.html.*
 import qrcode.color.Colors
 
 title = "Kotlin Script: для кого, зачем и как"
@@ -1215,11 +1213,10 @@ fun qr(data: String) = qrCode(data) {
 }
 
 head {
-    script {
+    script(type = "text/javascript") {
         unsafe {
-            raw("""
-                <!-- Yandex.Metrika counter -->
-                <script type="text/javascript" >
+            raw(
+                """
                    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
                    m[i].l=1*new Date();
                    for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
@@ -1232,10 +1229,8 @@ head {
                         accurateTrackBounce:true,
                         trackHash: true
                    });
-                </script>
-                <noscript><div><img src="https://mc.yandex.ru/watch/97198873" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-                <!-- /Yandex.Metrika counter -->
-            """.trimIndent())
+                """.trimIndent()
+            )
         }
     }
 }

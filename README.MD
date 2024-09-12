@@ -2,6 +2,8 @@
 
 Доклад на JPoint.ru: [тыц](https://jpoint.ru/talks/4f1950e6c4144d0ea1ac306d0545217a/)
 
+Доклад на YouTube: [тыц](https://www.youtube.com/watch?v=zVqqE-yntiE)
+
 Я в Telegram: [@limebeck](https://t.me/limebeck)
 
 Открыть презентацию в браузере можно по ссылке: https://kotlin-script.static.limebeck.dev/

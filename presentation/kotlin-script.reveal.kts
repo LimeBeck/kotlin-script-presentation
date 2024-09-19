@@ -15,8 +15,10 @@ configuration {
     controlsLayout = RevealKt.Configuration.ControlsLayout.EDGES
     theme = RevealKt.Configuration.Theme.Predefined.BLACK
     additionalCssStyle = loadAsset("additional.css").decodeToString()
-    controls = true
-    controlsTutorial = true
+    controls = false
+    controlsTutorial = false
+    fragmentInURL = true
+    hash = true
 }
 
 meta {
@@ -43,7 +45,7 @@ slides {
                     +unorderedListOf(
                         listOf(
                             "Техлид JVM Backend в Банке Центр-инвест",
-                            "Пишу на Kotlin больше 5 лет",
+                            "Пишу на Kotlin 6 лет",
                             "Фанат Kotlin",
                         ),
                         fragmented = false
@@ -127,7 +129,7 @@ slides {
                 "Consoles like IPython/Jupyter Notebook",
                 "Game scripting engines",
                 "...",
-                fragmented = true
+                fragmented = false
             )
             +note {
                 """
@@ -823,6 +825,7 @@ slides {
                 "Параметры компилятора Kotlin",
                 "Доступные в скрипте свойства",
                 "Определение неявных (implicit) ресиверов",
+                fragmented = false
             )
         }
 
@@ -830,7 +833,7 @@ slides {
             +compilationTitle
             +exampleTitle
             +kotlinCode(
-                lines = "|2-4|5-9|10|11|12|13"
+//                lines = "|2-4|5-9|10|11|12|13"
             ) {
                 """
                     object GitlabCiKtScriptCompilationConfiguration : ScriptCompilationConfiguration({
@@ -850,28 +853,28 @@ slides {
                 """.trimIndent()
             }
         }
-        slide {
-            +compilationTitle
-            +exampleTitle
-            +regular("PipelineBuilder.kt") //TODO: Написать свой DSL - будет проще с примерами
-            +kotlinCode {
-                """
-                    class PipelineBuilder {
-                        var stages: List<Stage> = mutableListOf()
-                        fun stages(vararg stage: String) {
-                            stages += stage.asList().map { Stage(it) }
-                        }
-                    }
-                """.trimIndent()
-            }
-            +regular("example.gitlab-ci.kts")
-            +kotlinCode {
-                """
-                    //this: PipelineBuilder
-                    stages("build", "deploy")
-                """.trimIndent()
-            }
-        }
+//        slide {
+//            +compilationTitle
+//            +exampleTitle
+//            +regular("PipelineBuilder.kt") //TODO: Написать свой DSL - будет проще с примерами
+//            +kotlinCode {
+//                """
+//                    class PipelineBuilder {
+//                        var stages: List<Stage> = mutableListOf()
+//                        fun stages(vararg stage: String) {
+//                            stages += stage.asList().map { Stage(it) }
+//                        }
+//                    }
+//                """.trimIndent()
+//            }
+//            +regular("example.gitlab-ci.kts")
+//            +kotlinCode {
+//                """
+//                    //this: PipelineBuilder
+//                    stages("build", "deploy")
+//                """.trimIndent()
+//            }
+//        }
         slide {
             +compilationTitle
             +exampleTitle
@@ -886,58 +889,58 @@ slides {
                 """.trimIndent()
             }
         }
-        val externalDeps = smallTitle { "Внешние зависимости" }
-        slide {
-            +compilationTitle
-            +externalDeps
-            +kotlinCode(lines = "2-10") {
-                """
-                    object GitlabCiKtScriptCompilationConfiguration : ScriptCompilationConfiguration({
-                        defaultImports(DependsOn::class, Repository::class)
-                        refineConfiguration {
-                            onAnnotations(
-                                DependsOn::class,
-                                Repository::class,
-                                // Обработчик аннотаций
-                                handler = ::configureMavenDepsOnAnnotations
-                            )
-                        }
-                        
-                        jvm { 
-                            dependenciesFromClassContext(PipelineBuilder::class, wholeClasspath = true) 
-                        }
-                        defaultImports(
-                            "dev.otbe.gitlab.ci.core.model.*",
-                            "dev.otbe.gitlab.ci.dsl.*",
-                            "dev.otbe.gitlab.ci.core.goesTo"
-                        )
-                        ide { acceptedLocations(ScriptAcceptedLocation.Everywhere) }
-                        compilerOptions.append("-Xcontext-receivers")
-                        providedProperties("propName" to String::class)
-                        implicitReceivers(PipelineBuilder::class)
-                    }
-                """.trimIndent()
-            }
-        }
-        slide {
-            +compilationTitle
-            +externalDeps
-            +regular("example.gitlab-ci.kts")
-            +kotlinCode {
-                """
-                    @file:Repository("https://private-nexus.company.org/ci-templates/")
-                    @file:DependsOn("org.company.ci.templates:jvm-jobs:1.0.0")
-
-                    import org.company.ci.templates.jvm.jobs.*
-                    
-                    val appName = "kotlin-app"
-                    gradleJob {
-                        task = "build"
-                        artifact = "./build/libs/$`$`{appName}.jar"
-                    }
-                """.trimIndent()
-            }
-        }
+//        val externalDeps = smallTitle { "Внешние зависимости" }
+//        slide {
+//            +compilationTitle
+//            +externalDeps
+//            +kotlinCode(lines = "2-10") {
+//                """
+//                    object GitlabCiKtScriptCompilationConfiguration : ScriptCompilationConfiguration({
+//                        defaultImports(DependsOn::class, Repository::class)
+//                        refineConfiguration {
+//                            onAnnotations(
+//                                DependsOn::class,
+//                                Repository::class,
+//                                // Обработчик аннотаций
+//                                handler = ::configureMavenDepsOnAnnotations
+//                            )
+//                        }
+//
+//                        jvm {
+//                            dependenciesFromClassContext(PipelineBuilder::class, wholeClasspath = true)
+//                        }
+//                        defaultImports(
+//                            "dev.otbe.gitlab.ci.core.model.*",
+//                            "dev.otbe.gitlab.ci.dsl.*",
+//                            "dev.otbe.gitlab.ci.core.goesTo"
+//                        )
+//                        ide { acceptedLocations(ScriptAcceptedLocation.Everywhere) }
+//                        compilerOptions.append("-Xcontext-receivers")
+//                        providedProperties("propName" to String::class)
+//                        implicitReceivers(PipelineBuilder::class)
+//                    }
+//                """.trimIndent()
+//            }
+//        }
+//        slide {
+//            +compilationTitle
+//            +externalDeps
+//            +regular("example.gitlab-ci.kts")
+//            +kotlinCode {
+//                """
+//                    @file:Repository("https://private-nexus.company.org/ci-templates/")
+//                    @file:DependsOn("org.company.ci.templates:jvm-jobs:1.0.0")
+//
+//                    import org.company.ci.templates.jvm.jobs.*
+//
+//                    val appName = "kotlin-app"
+//                    gradleJob {
+//                        task = "build"
+//                        artifact = "./build/libs/$`$`{appName}.jar"
+//                    }
+//                """.trimIndent()
+//            }
+//        }
     }
 
     val evaluationTitle = smallTitle { "Конфигурация исполнения" }
@@ -953,7 +956,8 @@ slides {
                 "Аргументы конструктора для базового класса скрипта",
                 "Возможность разделения инстансов скрипта",
                 "Просмотр истории запусков (для REPL)",
-                "Возможность переопределения любых частей скрипта"
+                "Возможность переопределения любых частей скрипта",
+                fragmented = false
             )
         }
         slide {

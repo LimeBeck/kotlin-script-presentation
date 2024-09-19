@@ -1,4 +1,4 @@
-val revealKtVersion = "0.3.0"
+val revealKtVersion = "0.3.1"
 
 group = "dev.limebeck"
 version = "1.0.0"
